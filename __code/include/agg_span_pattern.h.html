@@ -1,0 +1,298 @@
+<HTML><HEAD><TITLE>Anti-Grain Geometry - </TITLE>
+<META http-equiv="Content-Type" content="text/html"/>
+<LINK rel="stylesheet" type="text/css" href="../../agg.styles.css"/>
+</HEAD>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0"><TR><TD><PRE><SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Anti-Grain Geometry - Version 2.3</SPAN>
+<SPAN class="rem">// Copyright (C) 2002-2005 Maxim Shemanarev (http://www.antigrain.com)</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// Permission to copy, use, modify, sell and distribute this software </SPAN>
+<SPAN class="rem">// is granted provided this copyright notice appears in all copies. </SPAN>
+<SPAN class="rem">// This software is provided &quot;as is&quot; without express or implied</SPAN>
+<SPAN class="rem">// warranty, and with no claim as to its suitability for any purpose.</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Contact: mcseem@antigrain.com</SPAN>
+<SPAN class="rem">//          mcseemagg@yahoo.com</SPAN>
+<SPAN class="rem">//          http://www.antigrain.com</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// Adaptation for high precision colors has been sponsored by </SPAN>
+<SPAN class="rem">// Liberty Technology Systems, Inc., visit http://lib-sys.com</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// Liberty Technology Systems, Inc. is the provider of</SPAN>
+<SPAN class="rem">// PostScript and PDF technology for software developers.</SPAN>
+<SPAN class="rem">// </SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+
+
+<SPAN class="kw2">#ifndef</SPAN> AGG_SPAN_PATTERN_INCLUDED
+<SPAN class="kw2">#define</SPAN> AGG_SPAN_PATTERN_INCLUDED
+
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="agg_basics.h.html">agg_basics.h</A>&quot;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="agg_rendering_buffer.h.html">agg_rendering_buffer.h</A>&quot;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="agg_span_generator.h.html">agg_span_generator.h</A>&quot;</SPAN>
+
+
+<SPAN class="kw1">namespace</SPAN> agg
+<SPAN class="op">{</SPAN>
+
+    <SPAN class="rem">//---------------------------------------------------<A name="span_pattern_base"><B></B></A><A href="agg_span_pattern.h.html#span_pattern_base">span_pattern_base</A></SPAN>
+    <SPAN class="kw1">template</SPAN><SPAN class="op">&lt;</SPAN><SPAN class="kw1">class</SPAN> ColorT<SPAN class="op">,</SPAN> <SPAN class="kw1">class</SPAN> Allocator<SPAN class="op">&gt;</SPAN> 
+    <SPAN class="kw1">class</SPAN> <A href="agg_span_pattern.h.html#span_pattern_base">span_pattern_base</A> : <SPAN class="kw1">public</SPAN> <A href="agg_span_generator.h.html#span_generator">span_generator</A><SPAN class="op">&lt;</SPAN>ColorT<SPAN class="op">,</SPAN> Allocator<SPAN class="op">&gt;</SPAN>
+    <SPAN class="op">{</SPAN>
+    <SPAN class="kw1">public</SPAN>:
+        <SPAN class="kw1">typedef</SPAN> ColorT color_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> <SPAN class="kw1">typename</SPAN> ColorT::value_type value_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> Allocator alloc_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">enum</SPAN> base_scale_e <SPAN class="op">{</SPAN> base_mask <SPAN class="op">=</SPAN> color_type::base_mask <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+        <SPAN class="rem">//----------------------------------------------------------------</SPAN>
+        <A href="agg_span_pattern.h.html#span_pattern_base">span_pattern_base</A><SPAN class="op">(</SPAN>alloc_type<SPAN class="op">&amp;</SPAN> alloc<SPAN class="op">)</SPAN> : 
+            <A href="agg_span_generator.h.html#span_generator">span_generator</A><SPAN class="op">&lt;</SPAN>color_type<SPAN class="op">,</SPAN> alloc_type<SPAN class="op">&gt;</SPAN><SPAN class="op">(</SPAN>alloc<SPAN class="op">)</SPAN> 
+        <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//----------------------------------------------------------------</SPAN>
+        <A href="agg_span_pattern.h.html#span_pattern_base">span_pattern_base</A><SPAN class="op">(</SPAN>alloc_type<SPAN class="op">&amp;</SPAN> alloc<SPAN class="op">,</SPAN>
+                     <SPAN class="kw1">const</SPAN> <A href="../../doc/basic_renderers/basic_renderers.agdoc.html#rendering_buffer">rendering_buffer</A><SPAN class="op">&amp;</SPAN> src<SPAN class="op">,</SPAN> 
+                     <SPAN class="kw1">unsigned</SPAN> offset_x<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> offset_y<SPAN class="op">,</SPAN> 
+                     <SPAN class="kw1">double</SPAN> alpha<SPAN class="op">)</SPAN> :
+            <A href="agg_span_generator.h.html#span_generator">span_generator</A><SPAN class="op">&lt;</SPAN>color_type<SPAN class="op">,</SPAN> alloc_type<SPAN class="op">&gt;</SPAN><SPAN class="op">(</SPAN>alloc<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_src<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>src<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_offset_x<SPAN class="op">(</SPAN>offset_x<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_offset_y<SPAN class="op">(</SPAN>offset_y<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_alpha<SPAN class="op">(</SPAN>value_type<SPAN class="op">(</SPAN>alpha <SPAN class="op">*</SPAN> <SPAN class="kw1">double</SPAN><SPAN class="op">(</SPAN>base_mask<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//----------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">const</SPAN> <A href="../../doc/basic_renderers/basic_renderers.agdoc.html#rendering_buffer">rendering_buffer</A><SPAN class="op">&amp;</SPAN> source_image<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="op">{</SPAN> <SPAN class="kw1">return</SPAN> <SPAN class="op">*</SPAN>m_src<SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+        <SPAN class="kw1">unsigned</SPAN>   offset_x<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN>                  <SPAN class="kw1">const</SPAN> <SPAN class="op">{</SPAN> <SPAN class="kw1">return</SPAN> m_offset_x<SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+        <SPAN class="kw1">unsigned</SPAN>   offset_y<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN>                  <SPAN class="kw1">const</SPAN> <SPAN class="op">{</SPAN> <SPAN class="kw1">return</SPAN> m_offset_y<SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+        <SPAN class="kw1">double</SPAN>     alpha<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN>                     <SPAN class="kw1">const</SPAN> <SPAN class="op">{</SPAN> <SPAN class="kw1">return</SPAN> m_alpha <SPAN class="op">/</SPAN> <SPAN class="kw1">double</SPAN><SPAN class="op">(</SPAN>base_mask<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+        value_type alpha_int<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN>                 <SPAN class="kw1">const</SPAN> <SPAN class="op">{</SPAN> <SPAN class="kw1">return</SPAN> m_alpha<SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//----------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">void</SPAN> source_image<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <A href="../../doc/basic_renderers/basic_renderers.agdoc.html#rendering_buffer">rendering_buffer</A><SPAN class="op">&amp;</SPAN> v<SPAN class="op">)</SPAN>  <SPAN class="op">{</SPAN> m_src <SPAN class="op">=</SPAN> <SPAN class="op">&amp;</SPAN>v<SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+        <SPAN class="kw1">void</SPAN> offset_x<SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> v<SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN> m_offset_x <SPAN class="op">=</SPAN> v<SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+        <SPAN class="kw1">void</SPAN> offset_y<SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> v<SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN> m_offset_y <SPAN class="op">=</SPAN> v<SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+        <SPAN class="kw1">void</SPAN> alpha<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> v<SPAN class="op">)</SPAN>  <SPAN class="op">{</SPAN> m_alpha <SPAN class="op">=</SPAN> value_type<SPAN class="op">(</SPAN>v <SPAN class="op">*</SPAN> <SPAN class="kw1">double</SPAN><SPAN class="op">(</SPAN>base_mask<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//----------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">private</SPAN>:
+        <SPAN class="kw1">const</SPAN> <A href="../../doc/basic_renderers/basic_renderers.agdoc.html#rendering_buffer">rendering_buffer</A><SPAN class="op">*</SPAN> m_src<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> m_offset_x<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> m_offset_y<SPAN class="op">;</SPAN>
+        value_type m_alpha<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+
+    <SPAN class="rem">//---------------------------------------------------<A name="wrap_mode_repeat"><B></B></A><A href="agg_span_pattern.h.html#wrap_mode_repeat">wrap_mode_repeat</A></SPAN>
+    <SPAN class="kw1">class</SPAN> <A href="agg_span_pattern.h.html#wrap_mode_repeat">wrap_mode_repeat</A>
+    <SPAN class="op">{</SPAN>
+    <SPAN class="kw1">public</SPAN>:
+        <A href="agg_span_pattern.h.html#wrap_mode_repeat">wrap_mode_repeat</A><SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> size<SPAN class="op">)</SPAN> : 
+            m_size<SPAN class="op">(</SPAN>size<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> 
+            m_add<SPAN class="op">(</SPAN>size <SPAN class="op">*</SPAN> <SPAN class="op">(</SPAN><SPAN class="num">0x3FFFFFFF</SPAN> <SPAN class="op">/</SPAN> size<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_value<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+
+        AGG_INLINE <SPAN class="kw1">unsigned</SPAN> <SPAN class="kw1">operator</SPAN><SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> v<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN> 
+            <SPAN class="kw1">return</SPAN> m_value <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN><SPAN class="op">(</SPAN>v<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> m_add<SPAN class="op">)</SPAN> <SPAN class="op">%</SPAN> m_size<SPAN class="op">;</SPAN> 
+        <SPAN class="op">}</SPAN>
+
+        AGG_INLINE <SPAN class="kw1">unsigned</SPAN> <SPAN class="kw1">operator</SPAN><SPAN class="op">++</SPAN> <SPAN class="op">(</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="op">++</SPAN>m_value<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>m_value <SPAN class="op">&gt;=</SPAN> m_size<SPAN class="op">)</SPAN> m_value <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> m_value<SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+    <SPAN class="kw1">private</SPAN>:
+        <SPAN class="kw1">unsigned</SPAN> m_size<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> m_add<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> m_value<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+
+    <SPAN class="rem">//---------------------------------------------<A name="wrap_mode_repeat_pow2"><B></B></A><A href="agg_span_pattern.h.html#wrap_mode_repeat_pow2">wrap_mode_repeat_pow2</A></SPAN>
+    <SPAN class="kw1">class</SPAN> <A href="agg_span_pattern.h.html#wrap_mode_repeat_pow2">wrap_mode_repeat_pow2</A>
+    <SPAN class="op">{</SPAN>
+    <SPAN class="kw1">public</SPAN>:
+        <A href="agg_span_pattern.h.html#wrap_mode_repeat_pow2">wrap_mode_repeat_pow2</A><SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> size<SPAN class="op">)</SPAN> : m_value<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            m_mask <SPAN class="op">=</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN>m_mask <SPAN class="op">&lt;</SPAN> size<SPAN class="op">)</SPAN> m_mask <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>m_mask <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">|</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">;</SPAN>
+            m_mask <SPAN class="op">&gt;&gt;=</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+        AGG_INLINE <SPAN class="kw1">unsigned</SPAN> <SPAN class="kw1">operator</SPAN><SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> v<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN> 
+            <SPAN class="kw1">return</SPAN> m_value <SPAN class="op">=</SPAN> <SPAN class="kw1">unsigned</SPAN><SPAN class="op">(</SPAN>v<SPAN class="op">)</SPAN> <SPAN class="op">&amp;</SPAN> m_mask<SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+        AGG_INLINE <SPAN class="kw1">unsigned</SPAN> <SPAN class="kw1">operator</SPAN><SPAN class="op">++</SPAN> <SPAN class="op">(</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="op">++</SPAN>m_value<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>m_value <SPAN class="op">&gt;</SPAN> m_mask<SPAN class="op">)</SPAN> m_value <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> m_value<SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+    <SPAN class="kw1">private</SPAN>:
+        <SPAN class="kw1">unsigned</SPAN> m_mask<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> m_value<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+
+    <SPAN class="rem">//----------------------------------------<A name="wrap_mode_repeat_auto_pow2"><B></B></A><A href="agg_span_pattern.h.html#wrap_mode_repeat_auto_pow2">wrap_mode_repeat_auto_pow2</A></SPAN>
+    <SPAN class="kw1">class</SPAN> <A href="agg_span_pattern.h.html#wrap_mode_repeat_auto_pow2">wrap_mode_repeat_auto_pow2</A>
+    <SPAN class="op">{</SPAN>
+    <SPAN class="kw1">public</SPAN>:
+        <A href="agg_span_pattern.h.html#wrap_mode_repeat_auto_pow2">wrap_mode_repeat_auto_pow2</A><SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> size<SPAN class="op">)</SPAN> :
+            m_size<SPAN class="op">(</SPAN>size<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_add<SPAN class="op">(</SPAN>size <SPAN class="op">*</SPAN> <SPAN class="op">(</SPAN><SPAN class="num">0x3FFFFFFF</SPAN> <SPAN class="op">/</SPAN> size<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_mask<SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>m_size <SPAN class="op">&amp;</SPAN> <SPAN class="op">(</SPAN>m_size<SPAN class="op">-</SPAN><SPAN class="num">1</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> ? <SPAN class="num">0</SPAN> : m_size<SPAN class="op">-</SPAN><SPAN class="num">1</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_value<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+
+        AGG_INLINE <SPAN class="kw1">unsigned</SPAN> <SPAN class="kw1">operator</SPAN><SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> v<SPAN class="op">)</SPAN> 
+        <SPAN class="op">{</SPAN> 
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>m_mask<SPAN class="op">)</SPAN> <SPAN class="kw1">return</SPAN> m_value <SPAN class="op">=</SPAN> <SPAN class="kw1">unsigned</SPAN><SPAN class="op">(</SPAN>v<SPAN class="op">)</SPAN> <SPAN class="op">&amp;</SPAN> m_mask<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> m_value <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN><SPAN class="op">(</SPAN>v<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> m_add<SPAN class="op">)</SPAN> <SPAN class="op">%</SPAN> m_size<SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+        AGG_INLINE <SPAN class="kw1">unsigned</SPAN> <SPAN class="kw1">operator</SPAN><SPAN class="op">++</SPAN> <SPAN class="op">(</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="op">++</SPAN>m_value<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>m_value <SPAN class="op">&gt;=</SPAN> m_size<SPAN class="op">)</SPAN> m_value <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> m_value<SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+    <SPAN class="kw1">private</SPAN>:
+        <SPAN class="kw1">unsigned</SPAN> m_size<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> m_add<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> m_mask<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> m_value<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+
+    <SPAN class="rem">//--------------------------------------------------<A name="wrap_mode_reflect"><B></B></A><A href="agg_span_pattern.h.html#wrap_mode_reflect">wrap_mode_reflect</A></SPAN>
+    <SPAN class="kw1">class</SPAN> <A href="agg_span_pattern.h.html#wrap_mode_reflect">wrap_mode_reflect</A>
+    <SPAN class="op">{</SPAN>
+    <SPAN class="kw1">public</SPAN>:
+        <A href="agg_span_pattern.h.html#wrap_mode_reflect">wrap_mode_reflect</A><SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> size<SPAN class="op">)</SPAN> : 
+            m_size<SPAN class="op">(</SPAN>size<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> 
+            m_size2<SPAN class="op">(</SPAN>size <SPAN class="op">*</SPAN> <SPAN class="num">2</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_add<SPAN class="op">(</SPAN>m_size2 <SPAN class="op">*</SPAN> <SPAN class="op">(</SPAN><SPAN class="num">0x3FFFFFFF</SPAN> <SPAN class="op">/</SPAN> m_size2<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_value<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+
+        AGG_INLINE <SPAN class="kw1">unsigned</SPAN> <SPAN class="kw1">operator</SPAN><SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> v<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN> 
+            m_value <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN><SPAN class="op">(</SPAN>v<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> m_add<SPAN class="op">)</SPAN> <SPAN class="op">%</SPAN> m_size2<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>m_value <SPAN class="op">&gt;=</SPAN> m_size<SPAN class="op">)</SPAN> <SPAN class="kw1">return</SPAN> m_size2 <SPAN class="op">-</SPAN> m_value <SPAN class="op">-</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> m_value<SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        AGG_INLINE <SPAN class="kw1">unsigned</SPAN> <SPAN class="kw1">operator</SPAN><SPAN class="op">++</SPAN> <SPAN class="op">(</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="op">++</SPAN>m_value<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>m_value <SPAN class="op">&gt;=</SPAN> m_size2<SPAN class="op">)</SPAN> m_value <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>m_value <SPAN class="op">&gt;=</SPAN> m_size<SPAN class="op">)</SPAN> <SPAN class="kw1">return</SPAN> m_size2 <SPAN class="op">-</SPAN> m_value <SPAN class="op">-</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> m_value<SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+    <SPAN class="kw1">private</SPAN>:
+        <SPAN class="kw1">unsigned</SPAN> m_size<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> m_size2<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> m_add<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> m_value<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+
+
+    <SPAN class="rem">//-------------------------------------------<A name="wrap_mode_reflect_pow2"><B></B></A><A href="agg_span_pattern.h.html#wrap_mode_reflect_pow2">wrap_mode_reflect_pow2</A></SPAN>
+    <SPAN class="kw1">class</SPAN> <A href="agg_span_pattern.h.html#wrap_mode_reflect_pow2">wrap_mode_reflect_pow2</A>
+    <SPAN class="op">{</SPAN>
+    <SPAN class="kw1">public</SPAN>:
+        <A href="agg_span_pattern.h.html#wrap_mode_reflect_pow2">wrap_mode_reflect_pow2</A><SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> size<SPAN class="op">)</SPAN> : m_value<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            m_mask <SPAN class="op">=</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">;</SPAN>
+            m_size <SPAN class="op">=</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN>m_mask <SPAN class="op">&lt;</SPAN> size<SPAN class="op">)</SPAN> 
+            <SPAN class="op">{</SPAN>
+                m_mask <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>m_mask <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">|</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">;</SPAN>
+                m_size <SPAN class="op">&lt;&lt;=</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+        <SPAN class="op">}</SPAN>
+        AGG_INLINE <SPAN class="kw1">unsigned</SPAN> <SPAN class="kw1">operator</SPAN><SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> v<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN> 
+            m_value <SPAN class="op">=</SPAN> <SPAN class="kw1">unsigned</SPAN><SPAN class="op">(</SPAN>v<SPAN class="op">)</SPAN> <SPAN class="op">&amp;</SPAN> m_mask<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>m_value <SPAN class="op">&gt;=</SPAN> m_size<SPAN class="op">)</SPAN> <SPAN class="kw1">return</SPAN> m_mask <SPAN class="op">-</SPAN> m_value<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> m_value<SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+        AGG_INLINE <SPAN class="kw1">unsigned</SPAN> <SPAN class="kw1">operator</SPAN><SPAN class="op">++</SPAN> <SPAN class="op">(</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="op">++</SPAN>m_value<SPAN class="op">;</SPAN>
+            m_value <SPAN class="op">&amp;=</SPAN> m_mask<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>m_value <SPAN class="op">&gt;=</SPAN> m_size<SPAN class="op">)</SPAN> <SPAN class="kw1">return</SPAN> m_mask <SPAN class="op">-</SPAN> m_value<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> m_value<SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+    <SPAN class="kw1">private</SPAN>:
+        <SPAN class="kw1">unsigned</SPAN> m_size<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> m_mask<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> m_value<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+
+
+    <SPAN class="rem">//---------------------------------------<A name="wrap_mode_reflect_auto_pow2"><B></B></A><A href="agg_span_pattern.h.html#wrap_mode_reflect_auto_pow2">wrap_mode_reflect_auto_pow2</A></SPAN>
+    <SPAN class="kw1">class</SPAN> <A href="agg_span_pattern.h.html#wrap_mode_reflect_auto_pow2">wrap_mode_reflect_auto_pow2</A>
+    <SPAN class="op">{</SPAN>
+    <SPAN class="kw1">public</SPAN>:
+        <A href="agg_span_pattern.h.html#wrap_mode_reflect_auto_pow2">wrap_mode_reflect_auto_pow2</A><SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> size<SPAN class="op">)</SPAN> :
+            m_size<SPAN class="op">(</SPAN>size<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_size2<SPAN class="op">(</SPAN>size <SPAN class="op">*</SPAN> <SPAN class="num">2</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_add<SPAN class="op">(</SPAN>m_size2 <SPAN class="op">*</SPAN> <SPAN class="op">(</SPAN><SPAN class="num">0x3FFFFFFF</SPAN> <SPAN class="op">/</SPAN> m_size2<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_mask<SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>m_size2 <SPAN class="op">&amp;</SPAN> <SPAN class="op">(</SPAN>m_size2<SPAN class="op">-</SPAN><SPAN class="num">1</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> ? <SPAN class="num">0</SPAN> : m_size2<SPAN class="op">-</SPAN><SPAN class="num">1</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_value<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+
+        AGG_INLINE <SPAN class="kw1">unsigned</SPAN> <SPAN class="kw1">operator</SPAN><SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> v<SPAN class="op">)</SPAN> 
+        <SPAN class="op">{</SPAN> 
+            m_value <SPAN class="op">=</SPAN> m_mask ? <SPAN class="kw1">unsigned</SPAN><SPAN class="op">(</SPAN>v<SPAN class="op">)</SPAN> <SPAN class="op">&amp;</SPAN> m_mask : 
+                               <SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN><SPAN class="op">(</SPAN>v<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> m_add<SPAN class="op">)</SPAN> <SPAN class="op">%</SPAN> m_size2<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>m_value <SPAN class="op">&gt;=</SPAN> m_size<SPAN class="op">)</SPAN> <SPAN class="kw1">return</SPAN> m_size2 <SPAN class="op">-</SPAN> m_value <SPAN class="op">-</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> m_value<SPAN class="op">;</SPAN>            
+        <SPAN class="op">}</SPAN>
+        AGG_INLINE <SPAN class="kw1">unsigned</SPAN> <SPAN class="kw1">operator</SPAN><SPAN class="op">++</SPAN> <SPAN class="op">(</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="op">++</SPAN>m_value<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>m_value <SPAN class="op">&gt;=</SPAN> m_size2<SPAN class="op">)</SPAN> m_value <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>m_value <SPAN class="op">&gt;=</SPAN> m_size<SPAN class="op">)</SPAN> <SPAN class="kw1">return</SPAN> m_size2 <SPAN class="op">-</SPAN> m_value <SPAN class="op">-</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> m_value<SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+    <SPAN class="kw1">private</SPAN>:
+        <SPAN class="kw1">unsigned</SPAN> m_size<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> m_size2<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> m_add<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> m_mask<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> m_value<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+
+<SPAN class="op">}</SPAN>
+
+<SPAN class="kw2">#endif</SPAN>
+
+</PRE></TD></TR></TABLE><FONT style="margin-left:1em"><I></I></FONT><TABLE width="640px" bgcolor="#583927" height="1px" border="0" cellspacing="0" cellpadding="0" style="margin:0px;"><TR><TD></TD></TR></TABLE>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0">
+<TR><TD><CENTER><SPAN class="authors">
+Copyright <SPAN class="larger">&#169;</SPAN> 2002-2004
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+<TR><TD><CENTER><SPAN class="authors">
+Web Design and Programming
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+</TABLE>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+</HTML>

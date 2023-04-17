@@ -1,0 +1,277 @@
+<HTML><HEAD><TITLE>Anti-Grain Geometry - </TITLE>
+<META http-equiv="Content-Type" content="text/html"/>
+<LINK rel="stylesheet" type="text/css" href="../../agg.styles.css"/>
+</HEAD>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0"><TR><TD><PRE><SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Anti-Grain Geometry - Version 2.2</SPAN>
+<SPAN class="rem">// Copyright (C) 2002-2004 Maxim Shemanarev (http://www.antigrain.com)</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// Permission to copy, use, modify, sell and distribute this software </SPAN>
+<SPAN class="rem">// is granted provided this copyright notice appears in all copies. </SPAN>
+<SPAN class="rem">// This software is provided &quot;as is&quot; without express or implied</SPAN>
+<SPAN class="rem">// warranty, and with no claim as to its suitability for any purpose.</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Contact: mcseem@antigrain.com</SPAN>
+<SPAN class="rem">//          mcseemagg@yahoo.com</SPAN>
+<SPAN class="rem">//          http://www.antigrain.com</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// color type <A href="agg_color_rgba8.h.html#rgba8">rgba8</A></SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+
+<SPAN class="kw2">#ifndef</SPAN> AGG_COLOR_RGBA8_INCLUDED
+<SPAN class="kw2">#define</SPAN> AGG_COLOR_RGBA8_INCLUDED
+
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="agg_basics.h.html">agg_basics.h</A>&quot;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="agg_color_rgba.h.html">agg_color_rgba.h</A>&quot;</SPAN>
+
+<SPAN class="kw1">namespace</SPAN> agg
+<SPAN class="op">{</SPAN>
+
+    <SPAN class="rem">// Supported byte orders for RGB and RGBA pixel formats</SPAN>
+    <SPAN class="rem">//=======================================================================</SPAN>
+    <SPAN class="kw1">struct</SPAN> <A href="agg_color_rgba8.h.html#order_rgb24">order_rgb24</A>  <SPAN class="op">{</SPAN> <SPAN class="kw1">enum</SPAN> <SPAN class="op">{</SPAN> R<SPAN class="op">=</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN> G<SPAN class="op">=</SPAN><SPAN class="num">1</SPAN><SPAN class="op">,</SPAN> B<SPAN class="op">=</SPAN><SPAN class="num">2</SPAN><SPAN class="op">,</SPAN> rgb24_tag <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>       <SPAN class="rem">//----<A name="order_rgb24"><B></B></A><A href="agg_color_rgba8.h.html#order_rgb24">order_rgb24</A></SPAN>
+    <SPAN class="kw1">struct</SPAN> <A href="agg_color_rgba8.h.html#order_bgr24">order_bgr24</A>  <SPAN class="op">{</SPAN> <SPAN class="kw1">enum</SPAN> <SPAN class="op">{</SPAN> B<SPAN class="op">=</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN> G<SPAN class="op">=</SPAN><SPAN class="num">1</SPAN><SPAN class="op">,</SPAN> R<SPAN class="op">=</SPAN><SPAN class="num">2</SPAN><SPAN class="op">,</SPAN> rgb24_tag <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>       <SPAN class="rem">//----<A name="order_bgr24"><B></B></A><A href="agg_color_rgba8.h.html#order_bgr24">order_bgr24</A></SPAN>
+    <SPAN class="kw1">struct</SPAN> <A href="agg_color_rgba8.h.html#order_rgba32">order_rgba32</A> <SPAN class="op">{</SPAN> <SPAN class="kw1">enum</SPAN> <SPAN class="op">{</SPAN> R<SPAN class="op">=</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN> G<SPAN class="op">=</SPAN><SPAN class="num">1</SPAN><SPAN class="op">,</SPAN> B<SPAN class="op">=</SPAN><SPAN class="num">2</SPAN><SPAN class="op">,</SPAN> A<SPAN class="op">=</SPAN><SPAN class="num">3</SPAN><SPAN class="op">,</SPAN> rgba32_tag <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN> <SPAN class="rem">//----<A name="order_rgba32"><B></B></A><A href="agg_color_rgba8.h.html#order_rgba32">order_rgba32</A></SPAN>
+    <SPAN class="kw1">struct</SPAN> <A href="agg_color_rgba8.h.html#order_argb32">order_argb32</A> <SPAN class="op">{</SPAN> <SPAN class="kw1">enum</SPAN> <SPAN class="op">{</SPAN> A<SPAN class="op">=</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN> R<SPAN class="op">=</SPAN><SPAN class="num">1</SPAN><SPAN class="op">,</SPAN> G<SPAN class="op">=</SPAN><SPAN class="num">2</SPAN><SPAN class="op">,</SPAN> B<SPAN class="op">=</SPAN><SPAN class="num">3</SPAN><SPAN class="op">,</SPAN> rgba32_tag <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN> <SPAN class="rem">//----<A name="order_argb32"><B></B></A><A href="agg_color_rgba8.h.html#order_argb32">order_argb32</A></SPAN>
+    <SPAN class="kw1">struct</SPAN> <A href="agg_color_rgba8.h.html#order_abgr32">order_abgr32</A> <SPAN class="op">{</SPAN> <SPAN class="kw1">enum</SPAN> <SPAN class="op">{</SPAN> A<SPAN class="op">=</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN> B<SPAN class="op">=</SPAN><SPAN class="num">1</SPAN><SPAN class="op">,</SPAN> G<SPAN class="op">=</SPAN><SPAN class="num">2</SPAN><SPAN class="op">,</SPAN> R<SPAN class="op">=</SPAN><SPAN class="num">3</SPAN><SPAN class="op">,</SPAN> rgba32_tag <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN> <SPAN class="rem">//----<A name="order_abgr32"><B></B></A><A href="agg_color_rgba8.h.html#order_abgr32">order_abgr32</A></SPAN>
+    <SPAN class="kw1">struct</SPAN> <A href="agg_color_rgba8.h.html#order_bgra32">order_bgra32</A> <SPAN class="op">{</SPAN> <SPAN class="kw1">enum</SPAN> <SPAN class="op">{</SPAN> B<SPAN class="op">=</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN> G<SPAN class="op">=</SPAN><SPAN class="num">1</SPAN><SPAN class="op">,</SPAN> R<SPAN class="op">=</SPAN><SPAN class="num">2</SPAN><SPAN class="op">,</SPAN> A<SPAN class="op">=</SPAN><SPAN class="num">3</SPAN><SPAN class="op">,</SPAN> rgba32_tag <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN> <SPAN class="rem">//----<A name="order_bgra32"><B></B></A><A href="agg_color_rgba8.h.html#order_bgra32">order_bgra32</A></SPAN>
+
+    <SPAN class="rem">//==================================================================<A name="rgba8"><B></B></A><A href="agg_color_rgba8.h.html#rgba8">rgba8</A></SPAN>
+    <SPAN class="kw1">struct</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A> 
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">typedef</SPAN> <A href="agg_basics.h.html#int8u">int8u</A> alpha_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">enum</SPAN> order  <SPAN class="op">{</SPAN> rgb<SPAN class="op">,</SPAN> bgr  <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">enum</SPAN> premul <SPAN class="op">{</SPAN> pre <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+        <A href="agg_basics.h.html#int8u">int8u</A> r<SPAN class="op">;</SPAN>
+        <A href="agg_basics.h.html#int8u">int8u</A> g<SPAN class="op">;</SPAN>
+        <A href="agg_basics.h.html#int8u">int8u</A> b<SPAN class="op">;</SPAN>
+        <A href="agg_basics.h.html#int8u">int8u</A> a<SPAN class="op">;</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> r_<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> g_<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> b_<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> a_<SPAN class="op">=</SPAN><SPAN class="num">255</SPAN><SPAN class="op">)</SPAN> :
+            r<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>r_<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> g<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>g_<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> b<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>b_<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> a<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>a_<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">(</SPAN>premul<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> r_<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> g_<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> b_<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> a_<SPAN class="op">=</SPAN><SPAN class="num">255</SPAN><SPAN class="op">)</SPAN> :
+            r<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>r_<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> g<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>g_<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> b<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>b_<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> a<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>a_<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> 
+        <SPAN class="op">{</SPAN>
+            premultiply<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <A href="agg_color_rgba.h.html#rgba">rgba</A><SPAN class="op">&amp;</SPAN> c<SPAN class="op">)</SPAN> :
+            r<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>r <SPAN class="op">*</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN> <SPAN class="op">+</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">5</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> 
+            g<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>g <SPAN class="op">*</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN> <SPAN class="op">+</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">5</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> 
+            b<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>b <SPAN class="op">*</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN> <SPAN class="op">+</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">5</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> 
+            a<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>a <SPAN class="op">*</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN> <SPAN class="op">+</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">5</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">(</SPAN>premul<SPAN class="op">,</SPAN> <SPAN class="kw1">const</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">&amp;</SPAN> c<SPAN class="op">)</SPAN> :
+            r<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>r<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> g<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>g<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> b<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>b<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> a<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>a<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> 
+        <SPAN class="op">{</SPAN>
+            premultiply<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">&amp;</SPAN> c<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> a_<SPAN class="op">)</SPAN> :
+            r<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>r<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> g<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>g<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> b<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>b<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> a<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>a_<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">(</SPAN>premul<SPAN class="op">,</SPAN> <SPAN class="kw1">const</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">&amp;</SPAN> c<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> a_<SPAN class="op">)</SPAN> :
+            r<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>r<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> g<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>g<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> b<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>b<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> a<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>a_<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> 
+        <SPAN class="op">{</SPAN>
+            premultiply<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> packed<SPAN class="op">,</SPAN> order o<SPAN class="op">)</SPAN> : 
+            r<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>o <SPAN class="op">==</SPAN> rgb<SPAN class="op">)</SPAN> ? <SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>packed <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&amp;</SPAN> <SPAN class="num">0xFF</SPAN><SPAN class="op">)</SPAN> : <SPAN class="op">(</SPAN>packed <SPAN class="op">&amp;</SPAN> <SPAN class="num">0xFF</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            g<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>packed <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">8</SPAN><SPAN class="op">)</SPAN>  <SPAN class="op">&amp;</SPAN> <SPAN class="num">0xFF</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            b<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>o <SPAN class="op">==</SPAN> rgb<SPAN class="op">)</SPAN> ? <SPAN class="op">(</SPAN>packed <SPAN class="op">&amp;</SPAN> <SPAN class="num">0xFF</SPAN><SPAN class="op">)</SPAN> : <SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>packed <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&amp;</SPAN> <SPAN class="num">0xFF</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            a<SPAN class="op">(</SPAN><SPAN class="num">255</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">(</SPAN>premul<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> packed<SPAN class="op">,</SPAN> order o<SPAN class="op">)</SPAN> : 
+            r<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>o <SPAN class="op">==</SPAN> rgb<SPAN class="op">)</SPAN> ? <SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>packed <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&amp;</SPAN> <SPAN class="num">0xFF</SPAN><SPAN class="op">)</SPAN> : <SPAN class="op">(</SPAN>packed <SPAN class="op">&amp;</SPAN> <SPAN class="num">0xFF</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            g<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>packed <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">8</SPAN><SPAN class="op">)</SPAN>  <SPAN class="op">&amp;</SPAN> <SPAN class="num">0xFF</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            b<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>o <SPAN class="op">==</SPAN> rgb<SPAN class="op">)</SPAN> ? <SPAN class="op">(</SPAN>packed <SPAN class="op">&amp;</SPAN> <SPAN class="num">0xFF</SPAN><SPAN class="op">)</SPAN> : <SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>packed <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&amp;</SPAN> <SPAN class="num">0xFF</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            a<SPAN class="op">(</SPAN><SPAN class="num">255</SPAN><SPAN class="op">)</SPAN> 
+        <SPAN class="op">{</SPAN>
+            premultiply<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">void</SPAN> clear<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            r <SPAN class="op">=</SPAN> g <SPAN class="op">=</SPAN> b <SPAN class="op">=</SPAN> a <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+        
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">const</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">&amp;</SPAN> transparent<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            a <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> <SPAN class="op">*</SPAN><SPAN class="kw1">this</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">const</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">&amp;</SPAN> transparent<SPAN class="op">(</SPAN>premul<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            clear<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> <SPAN class="op">*</SPAN><SPAN class="kw1">this</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">const</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">&amp;</SPAN> opacity<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> a_<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>a_ <SPAN class="op">&lt;</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN> a_ <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>a_ <SPAN class="op">&gt;</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN> a_ <SPAN class="op">=</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+            a <SPAN class="op">=</SPAN> <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>a_ <SPAN class="op">*</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN> <SPAN class="op">+</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">5</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> <SPAN class="op">*</SPAN><SPAN class="kw1">this</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">const</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">&amp;</SPAN> opacity<SPAN class="op">(</SPAN>premul<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> a_<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>a_ <SPAN class="op">&lt;</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN> a_ <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>a_ <SPAN class="op">&gt;</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN> a_ <SPAN class="op">=</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+            a <SPAN class="op">=</SPAN> <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>a_ <SPAN class="op">*</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN> <SPAN class="op">+</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">5</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            premultiply<SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>a_ <SPAN class="op">*</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> <SPAN class="op">*</SPAN><SPAN class="kw1">this</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">double</SPAN> opacity<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="kw1">const</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">return</SPAN> <SPAN class="kw1">double</SPAN><SPAN class="op">(</SPAN>a<SPAN class="op">)</SPAN> <SPAN class="op">/</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">const</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">&amp;</SPAN> premultiply<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>a <SPAN class="op">==</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">)</SPAN> <SPAN class="kw1">return</SPAN> <SPAN class="op">*</SPAN><SPAN class="kw1">this</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>a <SPAN class="op">==</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                r <SPAN class="op">=</SPAN> g <SPAN class="op">=</SPAN> b <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="kw1">return</SPAN> <SPAN class="op">*</SPAN><SPAN class="kw1">this</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            r <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>r <SPAN class="op">*</SPAN> a<SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">8</SPAN><SPAN class="op">;</SPAN>
+            g <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>g <SPAN class="op">*</SPAN> a<SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">8</SPAN><SPAN class="op">;</SPAN>
+            b <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>b <SPAN class="op">*</SPAN> a<SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">8</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> <SPAN class="op">*</SPAN><SPAN class="kw1">this</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">const</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">&amp;</SPAN> premultiply<SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> a_<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>a <SPAN class="op">==</SPAN> <SPAN class="num">255</SPAN> <SPAN class="op">&amp;&amp;</SPAN> a_ <SPAN class="op">&gt;=</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">)</SPAN> <SPAN class="kw1">return</SPAN> <SPAN class="op">*</SPAN><SPAN class="kw1">this</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>a <SPAN class="op">==</SPAN> <SPAN class="num">0</SPAN>   <SPAN class="op">||</SPAN> a_ <SPAN class="op">==</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                r <SPAN class="op">=</SPAN> g <SPAN class="op">=</SPAN> b <SPAN class="op">=</SPAN> a <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="kw1">return</SPAN> <SPAN class="op">*</SPAN><SPAN class="kw1">this</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <SPAN class="kw1">unsigned</SPAN> r_ <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>r <SPAN class="op">*</SPAN> a_<SPAN class="op">)</SPAN> <SPAN class="op">/</SPAN> a<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">unsigned</SPAN> g_ <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>g <SPAN class="op">*</SPAN> a_<SPAN class="op">)</SPAN> <SPAN class="op">/</SPAN> a<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">unsigned</SPAN> b_ <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>b <SPAN class="op">*</SPAN> a_<SPAN class="op">)</SPAN> <SPAN class="op">/</SPAN> a<SPAN class="op">;</SPAN>
+            r <SPAN class="op">=</SPAN> <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>r_ <SPAN class="op">&gt;</SPAN> a_<SPAN class="op">)</SPAN> ? a_ : r_<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            g <SPAN class="op">=</SPAN> <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>g_ <SPAN class="op">&gt;</SPAN> a_<SPAN class="op">)</SPAN> ? a_ : g_<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            b <SPAN class="op">=</SPAN> <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>b_ <SPAN class="op">&gt;</SPAN> a_<SPAN class="op">)</SPAN> ? a_ : b_<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            a <SPAN class="op">=</SPAN> <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN>a_<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> <SPAN class="op">*</SPAN><SPAN class="kw1">this</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">const</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">&amp;</SPAN> demultiply<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>a <SPAN class="op">==</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">)</SPAN> <SPAN class="kw1">return</SPAN> <SPAN class="op">*</SPAN><SPAN class="kw1">this</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>a <SPAN class="op">==</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                r <SPAN class="op">=</SPAN> g <SPAN class="op">=</SPAN> b <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="kw1">return</SPAN> <SPAN class="op">*</SPAN><SPAN class="kw1">this</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <SPAN class="kw1">unsigned</SPAN> r_ <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>r <SPAN class="op">*</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">/</SPAN> a<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">unsigned</SPAN> g_ <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>g <SPAN class="op">*</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">/</SPAN> a<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">unsigned</SPAN> b_ <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>b <SPAN class="op">*</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">/</SPAN> a<SPAN class="op">;</SPAN>
+            r <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>r_ <SPAN class="op">&gt;</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">)</SPAN> ? <SPAN class="num">255</SPAN> : r_<SPAN class="op">;</SPAN>
+            g <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>g_ <SPAN class="op">&gt;</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">)</SPAN> ? <SPAN class="num">255</SPAN> : g_<SPAN class="op">;</SPAN>
+            b <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>b_ <SPAN class="op">&gt;</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">)</SPAN> ? <SPAN class="num">255</SPAN> : b_<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> <SPAN class="op">*</SPAN><SPAN class="kw1">this</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <A href="agg_color_rgba8.h.html#rgba8">rgba8</A> gradient<SPAN class="op">(</SPAN><A href="agg_color_rgba8.h.html#rgba8">rgba8</A> c<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> k<SPAN class="op">)</SPAN> <SPAN class="kw1">const</SPAN>
+        <SPAN class="op">{</SPAN>
+            <A href="agg_color_rgba8.h.html#rgba8">rgba8</A> ret<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">int</SPAN> ik <SPAN class="op">=</SPAN> <SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN>k <SPAN class="op">*</SPAN> <SPAN class="num">256</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            ret<SPAN class="op">.</SPAN>r <SPAN class="op">=</SPAN> <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN>r<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>r<SPAN class="op">)</SPAN> <SPAN class="op">-</SPAN> <SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN>r<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> ik<SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">8</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            ret<SPAN class="op">.</SPAN>g <SPAN class="op">=</SPAN> <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN>g<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>g<SPAN class="op">)</SPAN> <SPAN class="op">-</SPAN> <SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN>g<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> ik<SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">8</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            ret<SPAN class="op">.</SPAN>b <SPAN class="op">=</SPAN> <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN>b<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>b<SPAN class="op">)</SPAN> <SPAN class="op">-</SPAN> <SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN>b<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> ik<SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">8</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            ret<SPAN class="op">.</SPAN>a <SPAN class="op">=</SPAN> <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN>a<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>a<SPAN class="op">)</SPAN> <SPAN class="op">-</SPAN> <SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN>a<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> ik<SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">8</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> ret<SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">static</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A> no_color<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN> <SPAN class="kw1">return</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">static</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A> from_wavelength<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> wl<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> gamma <SPAN class="op">=</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">return</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">(</SPAN>rgba::from_wavelength<SPAN class="op">(</SPAN>wl<SPAN class="op">,</SPAN> gamma<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+	
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> wavelen<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> gamma<SPAN class="op">=</SPAN><SPAN class="num">1</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="op">*</SPAN><SPAN class="kw1">this</SPAN> <SPAN class="op">=</SPAN> from_wavelength<SPAN class="op">(</SPAN>wavelen<SPAN class="op">,</SPAN> gamma<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">inline</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A> rgba8_pre<SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> r<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> g<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> b<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> a<SPAN class="op">=</SPAN><SPAN class="num">255</SPAN><SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">return</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">(</SPAN>rgba8::pre<SPAN class="op">,</SPAN> r<SPAN class="op">,</SPAN> g<SPAN class="op">,</SPAN> b<SPAN class="op">,</SPAN> a<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN>
+
+    <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">inline</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A> rgba8_pre<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <A href="agg_color_rgba.h.html#rgba">rgba</A><SPAN class="op">&amp;</SPAN> c<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">return</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">(</SPAN>rgba8::pre<SPAN class="op">,</SPAN> c<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN>
+
+    <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">inline</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A> rgba8_pre<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">&amp;</SPAN> c<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> a<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">return</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A><SPAN class="op">(</SPAN>rgba8::pre<SPAN class="op">,</SPAN> c<SPAN class="op">,</SPAN> a<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+<SPAN class="op">}</SPAN>
+
+
+
+
+<SPAN class="kw2">#endif</SPAN>
+</PRE></TD></TR></TABLE><FONT style="margin-left:1em"><I></I></FONT><TABLE width="640px" bgcolor="#583927" height="1px" border="0" cellspacing="0" cellpadding="0" style="margin:0px;"><TR><TD></TD></TR></TABLE>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0">
+<TR><TD><CENTER><SPAN class="authors">
+Copyright <SPAN class="larger">&#169;</SPAN> 2002-2004
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+<TR><TD><CENTER><SPAN class="authors">
+Web Design and Programming
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+</TABLE>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+</HTML>

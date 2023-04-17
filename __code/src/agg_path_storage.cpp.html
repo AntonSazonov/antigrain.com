@@ -1,0 +1,544 @@
+<HTML><HEAD><TITLE>Anti-Grain Geometry - </TITLE>
+<META http-equiv="Content-Type" content="text/html"/>
+<LINK rel="stylesheet" type="text/css" href="../../agg.styles.css"/>
+</HEAD>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0"><TR><TD><PRE><SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Anti-Grain Geometry - Version 2.3</SPAN>
+<SPAN class="rem">// Copyright (C) 2002-2005 Maxim Shemanarev (http://www.antigrain.com)</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// Permission to copy, use, modify, sell and distribute this software </SPAN>
+<SPAN class="rem">// is granted provided this copyright notice appears in all copies. </SPAN>
+<SPAN class="rem">// This software is provided &quot;as is&quot; without express or implied</SPAN>
+<SPAN class="rem">// warranty, and with no claim as to its suitability for any purpose.</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Contact: mcseem@antigrain.com</SPAN>
+<SPAN class="rem">//          mcseemagg@yahoo.com</SPAN>
+<SPAN class="rem">//          http://www.antigrain.com</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// Class <A href="../include/agg_path_storage.h.html#path_storage">path_storage</A></SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="op">&lt;</SPAN>string<SPAN class="op">.</SPAN>h<SPAN class="op">&gt;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="op">&lt;</SPAN>math<SPAN class="op">.</SPAN>h<SPAN class="op">&gt;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="../include/agg_path_storage.h.html">agg_path_storage.h</A>&quot;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="../include/agg_math.h.html">agg_math.h</A>&quot;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="../include/agg_bezier_arc.h.html">agg_bezier_arc.h</A>&quot;</SPAN>
+
+
+<SPAN class="kw1">namespace</SPAN> agg
+<SPAN class="op">{</SPAN>
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <A href="../include/agg_path_storage.h.html#path_storage">path_storage</A>::~<A href="../include/agg_path_storage.h.html#path_storage">path_storage</A><SPAN class="op">(</SPAN><SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>m_total_blocks<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">double</SPAN><SPAN class="op">*</SPAN><SPAN class="op">*</SPAN> coord_blk <SPAN class="op">=</SPAN> m_coord_blocks <SPAN class="op">+</SPAN> m_total_blocks <SPAN class="op">-</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN>m_total_blocks<SPAN class="op">--</SPAN><SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                <SPAN class="kw1">delete</SPAN> <SPAN class="op">[</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">*</SPAN>coord_blk<SPAN class="op">;</SPAN>
+                <SPAN class="op">--</SPAN>coord_blk<SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <SPAN class="kw1">delete</SPAN> <SPAN class="op">[</SPAN><SPAN class="op">]</SPAN> m_coord_blocks<SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    path_storage::<A href="../include/agg_path_storage.h.html#path_storage">path_storage</A><SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> :
+        m_total_vertices<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+        m_total_blocks<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+        m_max_blocks<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+        m_coord_blocks<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+        m_cmd_blocks<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+        m_iterator<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    path_storage::<A href="../include/agg_path_storage.h.html#path_storage">path_storage</A><SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <A href="../include/agg_path_storage.h.html#path_storage">path_storage</A><SPAN class="op">&amp;</SPAN> ps<SPAN class="op">)</SPAN> : 
+        m_total_vertices<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+        m_total_blocks<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+        m_max_blocks<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+        m_coord_blocks<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+        m_cmd_blocks<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+        m_iterator<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        copy_from<SPAN class="op">(</SPAN>ps<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">void</SPAN> path_storage::remove_all<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        m_total_vertices <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+        m_iterator <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">void</SPAN> path_storage::copy_from<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <A href="../include/agg_path_storage.h.html#path_storage">path_storage</A><SPAN class="op">&amp;</SPAN> ps<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        remove_all<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> i<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">for</SPAN><SPAN class="op">(</SPAN>i <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN> i <SPAN class="op">&lt;</SPAN> ps<SPAN class="op">.</SPAN>total_vertices<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN> i<SPAN class="op">++</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">double</SPAN> x<SPAN class="op">,</SPAN> y<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">unsigned</SPAN> cmd <SPAN class="op">=</SPAN> ps<SPAN class="op">.</SPAN>vertex<SPAN class="op">(</SPAN>i<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>x<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>y<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            add_vertex<SPAN class="op">(</SPAN>x<SPAN class="op">,</SPAN> y<SPAN class="op">,</SPAN> cmd<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">void</SPAN> path_storage::allocate_block<SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> nb<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>nb <SPAN class="op">&gt;=</SPAN> m_max_blocks<SPAN class="op">)</SPAN> 
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">double</SPAN><SPAN class="op">*</SPAN><SPAN class="op">*</SPAN> new_coords <SPAN class="op">=</SPAN> 
+                <SPAN class="kw1">new</SPAN> <SPAN class="kw1">double</SPAN><SPAN class="op">*</SPAN> <SPAN class="op">[</SPAN><SPAN class="op">(</SPAN>m_max_blocks <SPAN class="op">+</SPAN> block_pool<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> <SPAN class="num">2</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+
+            <SPAN class="kw1">unsigned</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN><SPAN class="op">*</SPAN> new_cmds <SPAN class="op">=</SPAN> 
+                <SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN><SPAN class="op">*</SPAN><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN>new_coords <SPAN class="op">+</SPAN> m_max_blocks <SPAN class="op">+</SPAN> block_pool<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>m_coord_blocks<SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                memcpy<SPAN class="op">(</SPAN>new_coords<SPAN class="op">,</SPAN> 
+                       m_coord_blocks<SPAN class="op">,</SPAN> 
+                       m_max_blocks <SPAN class="op">*</SPAN> <SPAN class="kw1">sizeof</SPAN><SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN><SPAN class="op">*</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+                memcpy<SPAN class="op">(</SPAN>new_cmds<SPAN class="op">,</SPAN> 
+                       m_cmd_blocks<SPAN class="op">,</SPAN> 
+                       m_max_blocks <SPAN class="op">*</SPAN> <SPAN class="kw1">sizeof</SPAN><SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+                <SPAN class="kw1">delete</SPAN> <SPAN class="op">[</SPAN><SPAN class="op">]</SPAN> m_coord_blocks<SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            m_coord_blocks <SPAN class="op">=</SPAN> new_coords<SPAN class="op">;</SPAN>
+            m_cmd_blocks <SPAN class="op">=</SPAN> new_cmds<SPAN class="op">;</SPAN>
+            m_max_blocks <SPAN class="op">+=</SPAN> block_pool<SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+        m_coord_blocks<SPAN class="op">[</SPAN>nb<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> 
+            <SPAN class="kw1">new</SPAN> <SPAN class="kw1">double</SPAN> <SPAN class="op">[</SPAN>block_size <SPAN class="op">*</SPAN> <SPAN class="num">2</SPAN> <SPAN class="op">+</SPAN> 
+                        block_size <SPAN class="op">/</SPAN> 
+                        <SPAN class="op">(</SPAN><SPAN class="kw1">sizeof</SPAN><SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">/</SPAN> <SPAN class="kw1">sizeof</SPAN><SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+
+        m_cmd_blocks<SPAN class="op">[</SPAN>nb<SPAN class="op">]</SPAN>  <SPAN class="op">=</SPAN> 
+            <SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN>m_coord_blocks<SPAN class="op">[</SPAN>nb<SPAN class="op">]</SPAN> <SPAN class="op">+</SPAN> block_size <SPAN class="op">*</SPAN> <SPAN class="num">2</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+        m_total_blocks<SPAN class="op">++</SPAN><SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">void</SPAN> path_storage::rewind<SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> path_id<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        m_iterator <SPAN class="op">=</SPAN> path_id<SPAN class="op">;</SPAN> 
+    <SPAN class="op">}</SPAN>
+
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">void</SPAN> path_storage::arc_to<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> rx<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> ry<SPAN class="op">,</SPAN>
+                              <SPAN class="kw1">double</SPAN> angle<SPAN class="op">,</SPAN>
+                              <SPAN class="kw1">bool</SPAN> large_arc_flag<SPAN class="op">,</SPAN>
+                              <SPAN class="kw1">bool</SPAN> sweep_flag<SPAN class="op">,</SPAN>
+                              <SPAN class="kw1">double</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> y<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>m_total_vertices <SPAN class="op">&amp;&amp;</SPAN> <A href="../include/agg_basics.h.html#is_vertex">is_vertex</A><SPAN class="op">(</SPAN>command<SPAN class="op">(</SPAN>m_total_vertices <SPAN class="op">-</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">const</SPAN> <SPAN class="kw1">double</SPAN> epsilon <SPAN class="op">=</SPAN> <SPAN class="num">1e</SPAN><SPAN class="op">-</SPAN><SPAN class="num">30</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">double</SPAN> x0 <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">double</SPAN> y0 <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+            last_vertex<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>x0<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>y0<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+            rx <SPAN class="op">=</SPAN> fabs<SPAN class="op">(</SPAN>rx<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            ry <SPAN class="op">=</SPAN> fabs<SPAN class="op">(</SPAN>ry<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+            <SPAN class="rem">// Ensure radii are valid</SPAN>
+            <SPAN class="rem">//-------------------------</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>rx <SPAN class="op">&lt;</SPAN> epsilon <SPAN class="op">||</SPAN> ry <SPAN class="op">&lt;</SPAN> epsilon<SPAN class="op">)</SPAN> 
+            <SPAN class="op">{</SPAN>
+                line_to<SPAN class="op">(</SPAN>x<SPAN class="op">,</SPAN> y<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="kw1">return</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN><A href="../include/agg_math.h.html#calc_distance">calc_distance</A><SPAN class="op">(</SPAN>x0<SPAN class="op">,</SPAN> y0<SPAN class="op">,</SPAN> x<SPAN class="op">,</SPAN> y<SPAN class="op">)</SPAN> <SPAN class="op">&lt;</SPAN> epsilon<SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                <SPAN class="rem">// If the endpoints (x, y) and (x0, y0) are identical, then this</SPAN>
+                <SPAN class="rem">// is equivalent to omitting the elliptical <A href="../include/agg_arc.h.html#arc">arc</A> segment entirely.</SPAN>
+                <SPAN class="kw1">return</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <A href="../include/agg_bezier_arc.h.html#bezier_arc_svg">bezier_arc_svg</A> a<SPAN class="op">(</SPAN>x0<SPAN class="op">,</SPAN> y0<SPAN class="op">,</SPAN> rx<SPAN class="op">,</SPAN> ry<SPAN class="op">,</SPAN> angle<SPAN class="op">,</SPAN> large_arc_flag<SPAN class="op">,</SPAN> sweep_flag<SPAN class="op">,</SPAN> x<SPAN class="op">,</SPAN> y<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>a<SPAN class="op">.</SPAN>radii_ok<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                add_path<SPAN class="op">(</SPAN>a<SPAN class="op">,</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">,</SPAN> <SPAN class="kw1">true</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <SPAN class="kw1">else</SPAN>
+            <SPAN class="op">{</SPAN>
+                line_to<SPAN class="op">(</SPAN>x<SPAN class="op">,</SPAN> y<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+        <SPAN class="op">}</SPAN>
+        <SPAN class="kw1">else</SPAN>
+        <SPAN class="op">{</SPAN>
+            move_to<SPAN class="op">(</SPAN>x<SPAN class="op">,</SPAN> y<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">void</SPAN> path_storage::arc_rel<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> rx<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> ry<SPAN class="op">,</SPAN>
+                               <SPAN class="kw1">double</SPAN> angle<SPAN class="op">,</SPAN>
+                               <SPAN class="kw1">bool</SPAN> large_arc_flag<SPAN class="op">,</SPAN>
+                               <SPAN class="kw1">bool</SPAN> sweep_flag<SPAN class="op">,</SPAN>
+                               <SPAN class="kw1">double</SPAN> dx<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> dy<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        rel_to_abs<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>dx<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>dy<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        arc_to<SPAN class="op">(</SPAN>rx<SPAN class="op">,</SPAN> ry<SPAN class="op">,</SPAN> angle<SPAN class="op">,</SPAN> large_arc_flag<SPAN class="op">,</SPAN> sweep_flag<SPAN class="op">,</SPAN> dx<SPAN class="op">,</SPAN> dy<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">void</SPAN> path_storage::<A href="../include/agg_curves.h.html#curve3">curve3</A><SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> x_ctrl<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> y_ctrl<SPAN class="op">,</SPAN> 
+                              <SPAN class="kw1">double</SPAN> x_to<SPAN class="op">,</SPAN>   <SPAN class="kw1">double</SPAN> y_to<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        add_vertex<SPAN class="op">(</SPAN>x_ctrl<SPAN class="op">,</SPAN> y_ctrl<SPAN class="op">,</SPAN> <A href="../include/agg_basics.h.html#path_cmd_curve3">path_cmd_curve3</A><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        add_vertex<SPAN class="op">(</SPAN>x_to<SPAN class="op">,</SPAN>   y_to<SPAN class="op">,</SPAN>   <A href="../include/agg_basics.h.html#path_cmd_curve3">path_cmd_curve3</A><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN>
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">void</SPAN> path_storage::curve3_rel<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> dx_ctrl<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> dy_ctrl<SPAN class="op">,</SPAN> 
+                                  <SPAN class="kw1">double</SPAN> dx_to<SPAN class="op">,</SPAN>   <SPAN class="kw1">double</SPAN> dy_to<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        rel_to_abs<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>dx_ctrl<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>dy_ctrl<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        rel_to_abs<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>dx_to<SPAN class="op">,</SPAN>   <SPAN class="op">&amp;</SPAN>dy_to<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        add_vertex<SPAN class="op">(</SPAN>dx_ctrl<SPAN class="op">,</SPAN> dy_ctrl<SPAN class="op">,</SPAN> <A href="../include/agg_basics.h.html#path_cmd_curve3">path_cmd_curve3</A><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        add_vertex<SPAN class="op">(</SPAN>dx_to<SPAN class="op">,</SPAN>   dy_to<SPAN class="op">,</SPAN>   <A href="../include/agg_basics.h.html#path_cmd_curve3">path_cmd_curve3</A><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN>
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">void</SPAN> path_storage::<A href="../include/agg_curves.h.html#curve3">curve3</A><SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> x_to<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> y_to<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">double</SPAN> x0<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">double</SPAN> y0<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN><A href="../include/agg_basics.h.html#is_vertex">is_vertex</A><SPAN class="op">(</SPAN>last_vertex<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>x0<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>y0<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">double</SPAN> x_ctrl<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">double</SPAN> y_ctrl<SPAN class="op">;</SPAN> 
+            <SPAN class="kw1">unsigned</SPAN> cmd <SPAN class="op">=</SPAN> prev_vertex<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>x_ctrl<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>y_ctrl<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN><A href="../include/agg_basics.h.html#is_curve">is_curve</A><SPAN class="op">(</SPAN>cmd<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                x_ctrl <SPAN class="op">=</SPAN> x0 <SPAN class="op">+</SPAN> x0 <SPAN class="op">-</SPAN> x_ctrl<SPAN class="op">;</SPAN>
+                y_ctrl <SPAN class="op">=</SPAN> y0 <SPAN class="op">+</SPAN> y0 <SPAN class="op">-</SPAN> y_ctrl<SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <SPAN class="kw1">else</SPAN>
+            <SPAN class="op">{</SPAN>
+                x_ctrl <SPAN class="op">=</SPAN> x0<SPAN class="op">;</SPAN>
+                y_ctrl <SPAN class="op">=</SPAN> y0<SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <A href="../include/agg_curves.h.html#curve3">curve3</A><SPAN class="op">(</SPAN>x_ctrl<SPAN class="op">,</SPAN> y_ctrl<SPAN class="op">,</SPAN> x_to<SPAN class="op">,</SPAN> y_to<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">void</SPAN> path_storage::curve3_rel<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> dx_to<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> dy_to<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        rel_to_abs<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>dx_to<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>dy_to<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <A href="../include/agg_curves.h.html#curve3">curve3</A><SPAN class="op">(</SPAN>dx_to<SPAN class="op">,</SPAN> dy_to<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">void</SPAN> path_storage::<A href="../include/agg_curves.h.html#curve4">curve4</A><SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> x_ctrl1<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> y_ctrl1<SPAN class="op">,</SPAN> 
+                              <SPAN class="kw1">double</SPAN> x_ctrl2<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> y_ctrl2<SPAN class="op">,</SPAN> 
+                              <SPAN class="kw1">double</SPAN> x_to<SPAN class="op">,</SPAN>    <SPAN class="kw1">double</SPAN> y_to<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        add_vertex<SPAN class="op">(</SPAN>x_ctrl1<SPAN class="op">,</SPAN> y_ctrl1<SPAN class="op">,</SPAN> <A href="../include/agg_basics.h.html#path_cmd_curve4">path_cmd_curve4</A><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        add_vertex<SPAN class="op">(</SPAN>x_ctrl2<SPAN class="op">,</SPAN> y_ctrl2<SPAN class="op">,</SPAN> <A href="../include/agg_basics.h.html#path_cmd_curve4">path_cmd_curve4</A><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        add_vertex<SPAN class="op">(</SPAN>x_to<SPAN class="op">,</SPAN>    y_to<SPAN class="op">,</SPAN>    <A href="../include/agg_basics.h.html#path_cmd_curve4">path_cmd_curve4</A><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN>
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">void</SPAN> path_storage::curve4_rel<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> dx_ctrl1<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> dy_ctrl1<SPAN class="op">,</SPAN> 
+                                  <SPAN class="kw1">double</SPAN> dx_ctrl2<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> dy_ctrl2<SPAN class="op">,</SPAN> 
+                                  <SPAN class="kw1">double</SPAN> dx_to<SPAN class="op">,</SPAN>    <SPAN class="kw1">double</SPAN> dy_to<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        rel_to_abs<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>dx_ctrl1<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>dy_ctrl1<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        rel_to_abs<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>dx_ctrl2<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>dy_ctrl2<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        rel_to_abs<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>dx_to<SPAN class="op">,</SPAN>    <SPAN class="op">&amp;</SPAN>dy_to<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        add_vertex<SPAN class="op">(</SPAN>dx_ctrl1<SPAN class="op">,</SPAN> dy_ctrl1<SPAN class="op">,</SPAN> <A href="../include/agg_basics.h.html#path_cmd_curve4">path_cmd_curve4</A><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        add_vertex<SPAN class="op">(</SPAN>dx_ctrl2<SPAN class="op">,</SPAN> dy_ctrl2<SPAN class="op">,</SPAN> <A href="../include/agg_basics.h.html#path_cmd_curve4">path_cmd_curve4</A><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        add_vertex<SPAN class="op">(</SPAN>dx_to<SPAN class="op">,</SPAN>    dy_to<SPAN class="op">,</SPAN>    <A href="../include/agg_basics.h.html#path_cmd_curve4">path_cmd_curve4</A><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">void</SPAN> path_storage::<A href="../include/agg_curves.h.html#curve4">curve4</A><SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> x_ctrl2<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> y_ctrl2<SPAN class="op">,</SPAN> 
+                              <SPAN class="kw1">double</SPAN> x_to<SPAN class="op">,</SPAN>    <SPAN class="kw1">double</SPAN> y_to<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">double</SPAN> x0<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">double</SPAN> y0<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN><A href="../include/agg_basics.h.html#is_vertex">is_vertex</A><SPAN class="op">(</SPAN>last_vertex<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>x0<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>y0<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">double</SPAN> x_ctrl1<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">double</SPAN> y_ctrl1<SPAN class="op">;</SPAN> 
+            <SPAN class="kw1">unsigned</SPAN> cmd <SPAN class="op">=</SPAN> prev_vertex<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>x_ctrl1<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>y_ctrl1<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN><A href="../include/agg_basics.h.html#is_curve">is_curve</A><SPAN class="op">(</SPAN>cmd<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                x_ctrl1 <SPAN class="op">=</SPAN> x0 <SPAN class="op">+</SPAN> x0 <SPAN class="op">-</SPAN> x_ctrl1<SPAN class="op">;</SPAN>
+                y_ctrl1 <SPAN class="op">=</SPAN> y0 <SPAN class="op">+</SPAN> y0 <SPAN class="op">-</SPAN> y_ctrl1<SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <SPAN class="kw1">else</SPAN>
+            <SPAN class="op">{</SPAN>
+                x_ctrl1 <SPAN class="op">=</SPAN> x0<SPAN class="op">;</SPAN>
+                y_ctrl1 <SPAN class="op">=</SPAN> y0<SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <A href="../include/agg_curves.h.html#curve4">curve4</A><SPAN class="op">(</SPAN>x_ctrl1<SPAN class="op">,</SPAN> y_ctrl1<SPAN class="op">,</SPAN> x_ctrl2<SPAN class="op">,</SPAN> y_ctrl2<SPAN class="op">,</SPAN> x_to<SPAN class="op">,</SPAN> y_to<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">void</SPAN> path_storage::curve4_rel<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> dx_ctrl2<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> dy_ctrl2<SPAN class="op">,</SPAN> 
+                                  <SPAN class="kw1">double</SPAN> dx_to<SPAN class="op">,</SPAN>    <SPAN class="kw1">double</SPAN> dy_to<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        rel_to_abs<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>dx_ctrl2<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>dy_ctrl2<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        rel_to_abs<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>dx_to<SPAN class="op">,</SPAN>    <SPAN class="op">&amp;</SPAN>dy_to<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <A href="../include/agg_curves.h.html#curve4">curve4</A><SPAN class="op">(</SPAN>dx_ctrl2<SPAN class="op">,</SPAN> dy_ctrl2<SPAN class="op">,</SPAN> dx_to<SPAN class="op">,</SPAN> dy_to<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">void</SPAN> path_storage::end_poly<SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> flags<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>m_total_vertices<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN><A href="../include/agg_basics.h.html#is_vertex">is_vertex</A><SPAN class="op">(</SPAN>command<SPAN class="op">(</SPAN>m_total_vertices <SPAN class="op">-</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                add_vertex<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN> <A href="../include/agg_basics.h.html#path_cmd_end_poly">path_cmd_end_poly</A> <SPAN class="op">|</SPAN> flags<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+        <SPAN class="op">}</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">unsigned</SPAN> path_storage::start_new_path<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>m_total_vertices<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN><SPAN class="op">!</SPAN><A href="../include/agg_basics.h.html#is_stop">is_stop</A><SPAN class="op">(</SPAN>command<SPAN class="op">(</SPAN>m_total_vertices <SPAN class="op">-</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                add_vertex<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN> <A href="../include/agg_basics.h.html#path_cmd_stop">path_cmd_stop</A><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+        <SPAN class="op">}</SPAN>
+        <SPAN class="kw1">return</SPAN> m_total_vertices<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">void</SPAN> path_storage::add_poly<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">double</SPAN><SPAN class="op">*</SPAN> vertices<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> num<SPAN class="op">,</SPAN>
+                                <SPAN class="kw1">bool</SPAN> solid_path<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> end_flags<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>num<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN><SPAN class="op">!</SPAN>solid_path<SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                move_to<SPAN class="op">(</SPAN>vertices<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN><SPAN class="op">,</SPAN> vertices<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                vertices <SPAN class="op">+=</SPAN> <SPAN class="num">2</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="op">--</SPAN>num<SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN>num<SPAN class="op">--</SPAN><SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                line_to<SPAN class="op">(</SPAN>vertices<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN><SPAN class="op">,</SPAN> vertices<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                vertices <SPAN class="op">+=</SPAN> <SPAN class="num">2</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>end_flags<SPAN class="op">)</SPAN> end_poly<SPAN class="op">(</SPAN>end_flags<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">unsigned</SPAN> path_storage::perceive_polygon_orientation<SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> start<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> end<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        <SPAN class="rem">// Calculate signed area (double area to be exact)</SPAN>
+        <SPAN class="rem">//---------------------</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> np <SPAN class="op">=</SPAN> end <SPAN class="op">-</SPAN> start<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">double</SPAN> area <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> i<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">for</SPAN><SPAN class="op">(</SPAN>i <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN> i <SPAN class="op">&lt;</SPAN> np<SPAN class="op">;</SPAN> i<SPAN class="op">++</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">double</SPAN> x1<SPAN class="op">,</SPAN> y1<SPAN class="op">,</SPAN> x2<SPAN class="op">,</SPAN> y2<SPAN class="op">;</SPAN>
+            vertex<SPAN class="op">(</SPAN>start <SPAN class="op">+</SPAN> i<SPAN class="op">,</SPAN>            <SPAN class="op">&amp;</SPAN>x1<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>y1<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            vertex<SPAN class="op">(</SPAN>start <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>i <SPAN class="op">+</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">%</SPAN> np<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>x2<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>y2<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            area <SPAN class="op">+=</SPAN> x1 <SPAN class="op">*</SPAN> y2 <SPAN class="op">-</SPAN> y1 <SPAN class="op">*</SPAN> x2<SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+        <SPAN class="kw1">return</SPAN> <SPAN class="op">(</SPAN>area <SPAN class="op">&lt;</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN> ? <A href="../include/agg_basics.h.html#path_flags_cw">path_flags_cw</A> : <A href="../include/agg_basics.h.html#path_flags_ccw">path_flags_ccw</A><SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">void</SPAN> path_storage::invert_polygon<SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> start<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> end<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> i<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> tmp_cmd <SPAN class="op">=</SPAN> command<SPAN class="op">(</SPAN>start<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        
+        <SPAN class="op">--</SPAN>end<SPAN class="op">;</SPAN> <SPAN class="rem">// Make &quot;end&quot; inclusive</SPAN>
+
+        <SPAN class="rem">// Shift all commands to one position</SPAN>
+        <SPAN class="kw1">for</SPAN><SPAN class="op">(</SPAN>i <SPAN class="op">=</SPAN> start<SPAN class="op">;</SPAN> i <SPAN class="op">&lt;</SPAN> end<SPAN class="op">;</SPAN> i<SPAN class="op">++</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            modify_command<SPAN class="op">(</SPAN>i<SPAN class="op">,</SPAN> command<SPAN class="op">(</SPAN>i <SPAN class="op">+</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">// Assign starting command to the ending command</SPAN>
+        modify_command<SPAN class="op">(</SPAN>end<SPAN class="op">,</SPAN> tmp_cmd<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+        <SPAN class="rem">// Reverse the polygon</SPAN>
+        <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN>end <SPAN class="op">&gt;</SPAN> start<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">unsigned</SPAN> start_nb <SPAN class="op">=</SPAN> start <SPAN class="op">&gt;&gt;</SPAN> block_shift<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">unsigned</SPAN> end_nb   <SPAN class="op">=</SPAN> end   <SPAN class="op">&gt;&gt;</SPAN> block_shift<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">double</SPAN><SPAN class="op">*</SPAN> start_ptr <SPAN class="op">=</SPAN> m_coord_blocks<SPAN class="op">[</SPAN>start_nb<SPAN class="op">]</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>start <SPAN class="op">&amp;</SPAN> block_mask<SPAN class="op">)</SPAN> <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">double</SPAN><SPAN class="op">*</SPAN> end_ptr   <SPAN class="op">=</SPAN> m_coord_blocks<SPAN class="op">[</SPAN>end_nb<SPAN class="op">]</SPAN>   <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>end   <SPAN class="op">&amp;</SPAN> block_mask<SPAN class="op">)</SPAN> <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">double</SPAN> tmp_xy<SPAN class="op">;</SPAN>
+
+            tmp_xy       <SPAN class="op">=</SPAN> <SPAN class="op">*</SPAN>start_ptr<SPAN class="op">;</SPAN>
+            <SPAN class="op">*</SPAN>start_ptr<SPAN class="op">++</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">*</SPAN>end_ptr<SPAN class="op">;</SPAN>
+            <SPAN class="op">*</SPAN>end_ptr<SPAN class="op">++</SPAN>   <SPAN class="op">=</SPAN> tmp_xy<SPAN class="op">;</SPAN>
+
+            tmp_xy       <SPAN class="op">=</SPAN> <SPAN class="op">*</SPAN>start_ptr<SPAN class="op">;</SPAN>
+            <SPAN class="op">*</SPAN>start_ptr   <SPAN class="op">=</SPAN> <SPAN class="op">*</SPAN>end_ptr<SPAN class="op">;</SPAN>
+            <SPAN class="op">*</SPAN>end_ptr     <SPAN class="op">=</SPAN> tmp_xy<SPAN class="op">;</SPAN>
+
+            tmp_cmd <SPAN class="op">=</SPAN> m_cmd_blocks<SPAN class="op">[</SPAN>start_nb<SPAN class="op">]</SPAN><SPAN class="op">[</SPAN>start <SPAN class="op">&amp;</SPAN> block_mask<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+            m_cmd_blocks<SPAN class="op">[</SPAN>start_nb<SPAN class="op">]</SPAN><SPAN class="op">[</SPAN>start <SPAN class="op">&amp;</SPAN> block_mask<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> m_cmd_blocks<SPAN class="op">[</SPAN>end_nb<SPAN class="op">]</SPAN><SPAN class="op">[</SPAN>end <SPAN class="op">&amp;</SPAN> block_mask<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+            m_cmd_blocks<SPAN class="op">[</SPAN>end_nb<SPAN class="op">]</SPAN><SPAN class="op">[</SPAN>end <SPAN class="op">&amp;</SPAN> block_mask<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">)</SPAN>tmp_cmd<SPAN class="op">;</SPAN>
+
+            <SPAN class="op">++</SPAN>start<SPAN class="op">;</SPAN>
+            <SPAN class="op">--</SPAN>end<SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">unsigned</SPAN> path_storage::arrange_polygon_orientation<SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> start<SPAN class="op">,</SPAN> 
+                                                       <A href="../include/agg_basics.h.html#path_flags_e">path_flags_e</A> orientation<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>orientation <SPAN class="op">==</SPAN> <A href="../include/agg_basics.h.html#path_flags_none">path_flags_none</A><SPAN class="op">)</SPAN> <SPAN class="kw1">return</SPAN> start<SPAN class="op">;</SPAN>
+        
+        <SPAN class="rem">// Skip all non-vertices at the beginning</SPAN>
+        <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN>start <SPAN class="op">&lt;</SPAN> m_total_vertices <SPAN class="op">&amp;&amp;</SPAN> <SPAN class="op">!</SPAN><A href="../include/agg_basics.h.html#is_vertex">is_vertex</A><SPAN class="op">(</SPAN>command<SPAN class="op">(</SPAN>start<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">++</SPAN>start<SPAN class="op">;</SPAN>
+
+        <SPAN class="rem">// Skip all insignificant move_to</SPAN>
+        <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN>start<SPAN class="op">+</SPAN><SPAN class="num">1</SPAN> <SPAN class="op">&lt;</SPAN> m_total_vertices <SPAN class="op">&amp;&amp;</SPAN> 
+              <A href="../include/agg_basics.h.html#is_move_to">is_move_to</A><SPAN class="op">(</SPAN>command<SPAN class="op">(</SPAN>start<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&amp;&amp;</SPAN>
+              <A href="../include/agg_basics.h.html#is_move_to">is_move_to</A><SPAN class="op">(</SPAN>command<SPAN class="op">(</SPAN>start<SPAN class="op">+</SPAN><SPAN class="num">1</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">++</SPAN>start<SPAN class="op">;</SPAN>
+
+        <SPAN class="rem">// Find the last vertex</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> end <SPAN class="op">=</SPAN> start <SPAN class="op">+</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN>end <SPAN class="op">&lt;</SPAN> m_total_vertices <SPAN class="op">&amp;&amp;</SPAN> <SPAN class="op">!</SPAN><A href="../include/agg_basics.h.html#is_next_poly">is_next_poly</A><SPAN class="op">(</SPAN>command<SPAN class="op">(</SPAN>end<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">++</SPAN>end<SPAN class="op">;</SPAN>
+
+        <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>end <SPAN class="op">-</SPAN> start <SPAN class="op">&gt;</SPAN> <SPAN class="num">2</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>perceive_polygon_orientation<SPAN class="op">(</SPAN>start<SPAN class="op">,</SPAN> end<SPAN class="op">)</SPAN> <SPAN class="op">!=</SPAN> <SPAN class="kw1">unsigned</SPAN><SPAN class="op">(</SPAN>orientation<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                <SPAN class="rem">// Invert polygon, set orientation flag, and skip all end_poly</SPAN>
+                invert_polygon<SPAN class="op">(</SPAN>start<SPAN class="op">,</SPAN> end<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="kw1">unsigned</SPAN> cmd<SPAN class="op">;</SPAN>
+                <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN>end <SPAN class="op">&lt;</SPAN> m_total_vertices <SPAN class="op">&amp;&amp;</SPAN> <A href="../include/agg_basics.h.html#is_end_poly">is_end_poly</A><SPAN class="op">(</SPAN>cmd <SPAN class="op">=</SPAN> command<SPAN class="op">(</SPAN>end<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN>
+                <SPAN class="op">{</SPAN>
+                    modify_command<SPAN class="op">(</SPAN>end<SPAN class="op">++</SPAN><SPAN class="op">,</SPAN> <A href="../include/agg_basics.h.html#set_orientation">set_orientation</A><SPAN class="op">(</SPAN>cmd<SPAN class="op">,</SPAN> orientation<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="op">}</SPAN>
+            <SPAN class="op">}</SPAN>
+        <SPAN class="op">}</SPAN>
+        <SPAN class="kw1">return</SPAN> end<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">unsigned</SPAN> path_storage::arrange_orientations<SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> start<SPAN class="op">,</SPAN> 
+                                                <A href="../include/agg_basics.h.html#path_flags_e">path_flags_e</A> orientation<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>orientation <SPAN class="op">!=</SPAN> <A href="../include/agg_basics.h.html#path_flags_none">path_flags_none</A><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN>start <SPAN class="op">&lt;</SPAN> m_total_vertices<SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                start <SPAN class="op">=</SPAN> arrange_polygon_orientation<SPAN class="op">(</SPAN>start<SPAN class="op">,</SPAN> orientation<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN><A href="../include/agg_basics.h.html#is_stop">is_stop</A><SPAN class="op">(</SPAN>command<SPAN class="op">(</SPAN>start<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN>
+                <SPAN class="op">{</SPAN>
+                    <SPAN class="op">++</SPAN>start<SPAN class="op">;</SPAN>
+                    <SPAN class="kw1">break</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="op">}</SPAN>
+            <SPAN class="op">}</SPAN>
+        <SPAN class="op">}</SPAN>
+        <SPAN class="kw1">return</SPAN> start<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">void</SPAN> path_storage::arrange_orientations_all_paths<SPAN class="op">(</SPAN><A href="../include/agg_basics.h.html#path_flags_e">path_flags_e</A> orientation<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>orientation <SPAN class="op">!=</SPAN> <A href="../include/agg_basics.h.html#path_flags_none">path_flags_none</A><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">unsigned</SPAN> start <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN>start <SPAN class="op">&lt;</SPAN> m_total_vertices<SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                start <SPAN class="op">=</SPAN> arrange_orientations<SPAN class="op">(</SPAN>start<SPAN class="op">,</SPAN> orientation<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+        <SPAN class="op">}</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">void</SPAN> path_storage::flip_x<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> x1<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> x2<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> i<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">double</SPAN> x<SPAN class="op">,</SPAN> y<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">for</SPAN><SPAN class="op">(</SPAN>i <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN> i <SPAN class="op">&lt;</SPAN> m_total_vertices<SPAN class="op">;</SPAN> i<SPAN class="op">++</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">unsigned</SPAN> cmd <SPAN class="op">=</SPAN> vertex<SPAN class="op">(</SPAN>i<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>x<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>y<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN><A href="../include/agg_basics.h.html#is_vertex">is_vertex</A><SPAN class="op">(</SPAN>cmd<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                modify_vertex<SPAN class="op">(</SPAN>i<SPAN class="op">,</SPAN> x2 <SPAN class="op">-</SPAN> x <SPAN class="op">+</SPAN> x1<SPAN class="op">,</SPAN> y<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+        <SPAN class="op">}</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//------------------------------------------------------------------------</SPAN>
+    <SPAN class="kw1">void</SPAN> path_storage::flip_y<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> y1<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> y2<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> i<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">double</SPAN> x<SPAN class="op">,</SPAN> y<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">for</SPAN><SPAN class="op">(</SPAN>i <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN> i <SPAN class="op">&lt;</SPAN> m_total_vertices<SPAN class="op">;</SPAN> i<SPAN class="op">++</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">unsigned</SPAN> cmd <SPAN class="op">=</SPAN> vertex<SPAN class="op">(</SPAN>i<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>x<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>y<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN><A href="../include/agg_basics.h.html#is_vertex">is_vertex</A><SPAN class="op">(</SPAN>cmd<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                modify_vertex<SPAN class="op">(</SPAN>i<SPAN class="op">,</SPAN> x<SPAN class="op">,</SPAN> y2 <SPAN class="op">-</SPAN> y <SPAN class="op">+</SPAN> y1<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+        <SPAN class="op">}</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+<SPAN class="op">}</SPAN>
+
+</PRE></TD></TR></TABLE><FONT style="margin-left:1em"><I></I></FONT><TABLE width="640px" bgcolor="#583927" height="1px" border="0" cellspacing="0" cellpadding="0" style="margin:0px;"><TR><TD></TD></TR></TABLE>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0">
+<TR><TD><CENTER><SPAN class="authors">
+Copyright <SPAN class="larger">&#169;</SPAN> 2002-2004
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+<TR><TD><CENTER><SPAN class="authors">
+Web Design and Programming
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+</TABLE>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+</HTML>

@@ -1,0 +1,86 @@
+<HTML><HEAD><TITLE>Anti-Grain Geometry - </TITLE>
+<META http-equiv="Content-Type" content="text/html"/>
+<LINK rel="stylesheet" type="text/css" href="../../agg.styles.css"/>
+</HEAD>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0"><TR><TD><PRE><SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Anti-Grain Geometry - Version 2.3</SPAN>
+<SPAN class="rem">// Copyright (C) 2002-2005 Maxim Shemanarev (http://www.antigrain.com)</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// Permission to copy, use, modify, sell and distribute this software </SPAN>
+<SPAN class="rem">// is granted provided this copyright notice appears in all copies. </SPAN>
+<SPAN class="rem">// This software is provided &quot;as is&quot; without express or implied</SPAN>
+<SPAN class="rem">// warranty, and with no claim as to its suitability for any purpose.</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Contact: mcseem@antigrain.com</SPAN>
+<SPAN class="rem">//          mcseemagg@yahoo.com</SPAN>
+<SPAN class="rem">//          http://www.antigrain.com</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+
+<SPAN class="kw2">#ifndef</SPAN> AGG_RENDER_SCANLINES_INCLUDED
+<SPAN class="kw2">#define</SPAN> AGG_RENDER_SCANLINES_INCLUDED
+
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="agg_basics.h.html">agg_basics.h</A>&quot;</SPAN>
+
+<SPAN class="kw1">namespace</SPAN> agg
+<SPAN class="op">{</SPAN>
+    <SPAN class="rem">//========================================================<A name="render_scanlines"><B></B></A><A href="agg_render_scanlines.h.html#render_scanlines">render_scanlines</A></SPAN>
+    <SPAN class="kw1">template</SPAN><SPAN class="op">&lt;</SPAN><SPAN class="kw1">class</SPAN> Rasterizer<SPAN class="op">,</SPAN> <SPAN class="kw1">class</SPAN> Scanline<SPAN class="op">,</SPAN> <SPAN class="kw1">class</SPAN> Renderer<SPAN class="op">&gt;</SPAN>
+    <SPAN class="kw1">void</SPAN> <A href="agg_render_scanlines.h.html#render_scanlines">render_scanlines</A><SPAN class="op">(</SPAN>Rasterizer<SPAN class="op">&amp;</SPAN> ras<SPAN class="op">,</SPAN> Scanline<SPAN class="op">&amp;</SPAN> sl<SPAN class="op">,</SPAN> Renderer<SPAN class="op">&amp;</SPAN> ren<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>ras<SPAN class="op">.</SPAN>rewind_scanlines<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            sl<SPAN class="op">.</SPAN>reset<SPAN class="op">(</SPAN>ras<SPAN class="op">.</SPAN>min_x<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> ras<SPAN class="op">.</SPAN>max_x<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            ren<SPAN class="op">.</SPAN>prepare<SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN><SPAN class="op">(</SPAN>ras<SPAN class="op">.</SPAN>max_x<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">-</SPAN> ras<SPAN class="op">.</SPAN>min_x<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="num">2</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+            <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN>ras<SPAN class="op">.</SPAN>sweep_scanline<SPAN class="op">(</SPAN>sl<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                ren<SPAN class="op">.</SPAN>render<SPAN class="op">(</SPAN>sl<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+        <SPAN class="op">}</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="rem">//========================================================<A name="render_all_paths"><B></B></A><A href="agg_render_scanlines.h.html#render_all_paths">render_all_paths</A></SPAN>
+    <SPAN class="kw1">template</SPAN><SPAN class="op">&lt;</SPAN><SPAN class="kw1">class</SPAN> Rasterizer<SPAN class="op">,</SPAN> <SPAN class="kw1">class</SPAN> Scanline<SPAN class="op">,</SPAN> <SPAN class="kw1">class</SPAN> Renderer<SPAN class="op">,</SPAN> 
+             <SPAN class="kw1">class</SPAN> VertexSource<SPAN class="op">,</SPAN> <SPAN class="kw1">class</SPAN> ColorStorage<SPAN class="op">,</SPAN> <SPAN class="kw1">class</SPAN> PathId<SPAN class="op">&gt;</SPAN>
+    <SPAN class="kw1">void</SPAN> <A href="agg_render_scanlines.h.html#render_all_paths">render_all_paths</A><SPAN class="op">(</SPAN>Rasterizer<SPAN class="op">&amp;</SPAN> ras<SPAN class="op">,</SPAN> 
+                          Scanline<SPAN class="op">&amp;</SPAN> sl<SPAN class="op">,</SPAN>
+                          Renderer<SPAN class="op">&amp;</SPAN> r<SPAN class="op">,</SPAN> 
+                          VertexSource<SPAN class="op">&amp;</SPAN> vs<SPAN class="op">,</SPAN> 
+                          <SPAN class="kw1">const</SPAN> ColorStorage<SPAN class="op">&amp;</SPAN> as<SPAN class="op">,</SPAN> 
+                          <SPAN class="kw1">const</SPAN> PathId<SPAN class="op">&amp;</SPAN> path_id<SPAN class="op">,</SPAN>
+                          <SPAN class="kw1">unsigned</SPAN> num_paths<SPAN class="op">)</SPAN>
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">for</SPAN><SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> i <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN> i <SPAN class="op">&lt;</SPAN> num_paths<SPAN class="op">;</SPAN> i<SPAN class="op">++</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            ras<SPAN class="op">.</SPAN>reset<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            ras<SPAN class="op">.</SPAN>add_path<SPAN class="op">(</SPAN>vs<SPAN class="op">,</SPAN> path_id<SPAN class="op">[</SPAN>i<SPAN class="op">]</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            r<SPAN class="op">.</SPAN>color<SPAN class="op">(</SPAN>as<SPAN class="op">[</SPAN>i<SPAN class="op">]</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <A href="agg_render_scanlines.h.html#render_scanlines">render_scanlines</A><SPAN class="op">(</SPAN>ras<SPAN class="op">,</SPAN> sl<SPAN class="op">,</SPAN> r<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+    <SPAN class="op">}</SPAN>
+
+
+<SPAN class="op">}</SPAN>
+
+<SPAN class="kw2">#endif</SPAN>
+
+
+
+</PRE></TD></TR></TABLE><FONT style="margin-left:1em"><I></I></FONT><TABLE width="640px" bgcolor="#583927" height="1px" border="0" cellspacing="0" cellpadding="0" style="margin:0px;"><TR><TD></TD></TR></TABLE>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0">
+<TR><TD><CENTER><SPAN class="authors">
+Copyright <SPAN class="larger">&#169;</SPAN> 2002-2004
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+<TR><TD><CENTER><SPAN class="authors">
+Web Design and Programming
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+</TABLE>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+</HTML>

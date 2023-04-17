@@ -1,0 +1,105 @@
+<HTML><HEAD><TITLE>Anti-Grain Geometry - </TITLE>
+<META http-equiv="Content-Type" content="text/html"/>
+<LINK rel="stylesheet" type="text/css" href="../../agg.styles.css"/>
+</HEAD>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0"><TR><TD><PRE><SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Anti-Grain Geometry - Version 2.3</SPAN>
+<SPAN class="rem">// Copyright (C) 2002-2005 Maxim Shemanarev (http://www.antigrain.com)</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// Permission to copy, use, modify, sell and distribute this software </SPAN>
+<SPAN class="rem">// is granted provided this copyright notice appears in all copies. </SPAN>
+<SPAN class="rem">// This software is provided &quot;as is&quot; without express or implied</SPAN>
+<SPAN class="rem">// warranty, and with no claim as to its suitability for any purpose.</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Contact: mcseem@antigrain.com</SPAN>
+<SPAN class="rem">//          mcseemagg@yahoo.com</SPAN>
+<SPAN class="rem">//          http://www.antigrain.com</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// SVG parser.</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+
+<SPAN class="kw2">#ifndef</SPAN> AGG_SVG_PARSER_INCLUDED
+<SPAN class="kw2">#define</SPAN> AGG_SVG_PARSER_INCLUDED
+
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="agg_svg_path_tokenizer.h.html">agg_svg_path_tokenizer.h</A>&quot;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="agg_svg_path_renderer.h.html">agg_svg_path_renderer.h</A>&quot;</SPAN>
+
+<SPAN class="kw1">namespace</SPAN> agg
+<SPAN class="op">{</SPAN>
+<SPAN class="kw1">namespace</SPAN> svg
+<SPAN class="op">{</SPAN>
+
+    <SPAN class="kw1">class</SPAN> parser
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">enum</SPAN> buf_size_e <SPAN class="op">{</SPAN> buf_size <SPAN class="op">=</SPAN> BUFSIZ <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+    <SPAN class="kw1">public</SPAN>:
+
+        ~parser<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        parser<SPAN class="op">(</SPAN>path_renderer<SPAN class="op">&amp;</SPAN> path<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+        <SPAN class="kw1">void</SPAN> parse<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> fname<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> title<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="op">{</SPAN> <SPAN class="kw1">return</SPAN> m_title<SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+
+    <SPAN class="kw1">private</SPAN>:
+        <SPAN class="rem">// XML event handlers</SPAN>
+        <SPAN class="kw1">static</SPAN> <SPAN class="kw1">void</SPAN> start_element<SPAN class="op">(</SPAN><SPAN class="kw1">void</SPAN><SPAN class="op">*</SPAN> data<SPAN class="op">,</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> el<SPAN class="op">,</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN><SPAN class="op">*</SPAN> attr<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">static</SPAN> <SPAN class="kw1">void</SPAN> end_element<SPAN class="op">(</SPAN><SPAN class="kw1">void</SPAN><SPAN class="op">*</SPAN> data<SPAN class="op">,</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> el<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">static</SPAN> <SPAN class="kw1">void</SPAN> content<SPAN class="op">(</SPAN><SPAN class="kw1">void</SPAN><SPAN class="op">*</SPAN> data<SPAN class="op">,</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> s<SPAN class="op">,</SPAN> <SPAN class="kw1">int</SPAN> len<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+        <SPAN class="kw1">void</SPAN> parse_attr<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN><SPAN class="op">*</SPAN> attr<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> parse_path<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN><SPAN class="op">*</SPAN> attr<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> parse_poly<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN><SPAN class="op">*</SPAN> attr<SPAN class="op">,</SPAN> <SPAN class="kw1">bool</SPAN> close_flag<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> parse_rect<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN><SPAN class="op">*</SPAN> attr<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> parse_line<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN><SPAN class="op">*</SPAN> attr<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> parse_style<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> str<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> parse_transform<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> str<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+        <SPAN class="kw1">unsigned</SPAN> parse_matrix<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> str<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> parse_translate<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> str<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> parse_rotate<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> str<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> parse_scale<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> str<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> parse_skew_x<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> str<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> parse_skew_y<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> str<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        
+        <SPAN class="kw1">bool</SPAN> parse_attr<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> name<SPAN class="op">,</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> value<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">bool</SPAN> parse_name_value<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> nv_start<SPAN class="op">,</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> nv_end<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> copy_name<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> start<SPAN class="op">,</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> end<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> copy_value<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> start<SPAN class="op">,</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> end<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        
+    <SPAN class="kw1">private</SPAN>:
+        path_renderer<SPAN class="op">&amp;</SPAN> m_path<SPAN class="op">;</SPAN>
+        path_tokenizer m_tokenizer<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN>          m_buf<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN>          m_title<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN>       m_title_len<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">bool</SPAN>           m_title_flag<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">bool</SPAN>           m_path_flag<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN>          m_attr_name<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN>          m_attr_value<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN>       m_attr_name_len<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN>       m_attr_value_len<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+<SPAN class="op">}</SPAN>
+<SPAN class="op">}</SPAN>
+
+<SPAN class="kw2">#endif</SPAN>
+</PRE></TD></TR></TABLE><FONT style="margin-left:1em"><I></I></FONT><TABLE width="640px" bgcolor="#583927" height="1px" border="0" cellspacing="0" cellpadding="0" style="margin:0px;"><TR><TD></TD></TR></TABLE>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0">
+<TR><TD><CENTER><SPAN class="authors">
+Copyright <SPAN class="larger">&#169;</SPAN> 2002-2004
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+<TR><TD><CENTER><SPAN class="authors">
+Web Design and Programming
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+</TABLE>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+</HTML>

@@ -1,0 +1,340 @@
+<HTML><HEAD><TITLE>Anti-Grain Geometry - </TITLE>
+<META http-equiv="Content-Type" content="text/html"/>
+<LINK rel="stylesheet" type="text/css" href="../../agg.styles.css"/>
+</HEAD>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0"><TR><TD><PRE><SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Anti-Grain Geometry - Version 2.3</SPAN>
+<SPAN class="rem">// Copyright (C) 2002-2005 Maxim Shemanarev (http://www.antigrain.com)</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// Permission to copy, use, modify, sell and distribute this software </SPAN>
+<SPAN class="rem">// is granted provided this copyright notice appears in all copies. </SPAN>
+<SPAN class="rem">// This software is provided &quot;as is&quot; without express or implied</SPAN>
+<SPAN class="rem">// warranty, and with no claim as to its suitability for any purpose.</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Contact: mcseem@antigrain.com</SPAN>
+<SPAN class="rem">//          mcseemagg@yahoo.com</SPAN>
+<SPAN class="rem">//          http://www.antigrain.com</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// SVG path renderer.</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="kw2">#ifndef</SPAN> AGG_SVG_PATH_RENDERER_INCLUDED
+<SPAN class="kw2">#define</SPAN> AGG_SVG_PATH_RENDERER_INCLUDED
+
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="../include/agg_path_storage.h.html">agg_path_storage.h</A>&quot;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="../include/agg_conv_transform.h.html">agg_conv_transform.h</A>&quot;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="../include/agg_conv_stroke.h.html">agg_conv_stroke.h</A>&quot;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="../include/agg_conv_contour.h.html">agg_conv_contour.h</A>&quot;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="../include/agg_conv_curve.h.html">agg_conv_curve.h</A>&quot;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="../include/agg_color_rgba.h.html">agg_color_rgba.h</A>&quot;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="../include/agg_array.h.html">agg_array.h</A>&quot;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="../include/agg_bounding_rect.h.html">agg_bounding_rect.h</A>&quot;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="../include/agg_rasterizer_scanline_aa.h.html">agg_rasterizer_scanline_aa.h</A>&quot;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="agg_svg_path_tokenizer.h.html">agg_svg_path_tokenizer.h</A>&quot;</SPAN>
+
+<SPAN class="kw1">namespace</SPAN> agg
+<SPAN class="op">{</SPAN>
+<SPAN class="kw1">namespace</SPAN> svg
+<SPAN class="op">{</SPAN>
+    <SPAN class="kw1">template</SPAN><SPAN class="op">&lt;</SPAN><SPAN class="kw1">class</SPAN> VertexSource<SPAN class="op">&gt;</SPAN> <SPAN class="kw1">class</SPAN> conv_count
+    <SPAN class="op">{</SPAN>
+    <SPAN class="kw1">public</SPAN>:
+        conv_count<SPAN class="op">(</SPAN>VertexSource<SPAN class="op">&amp;</SPAN> vs<SPAN class="op">)</SPAN> : m_source<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>vs<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> m_count<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+
+        <SPAN class="kw1">void</SPAN> count<SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> n<SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN> m_count <SPAN class="op">=</SPAN> n<SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> count<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="op">{</SPAN> <SPAN class="kw1">return</SPAN> m_count<SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+
+        <SPAN class="kw1">void</SPAN> rewind<SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> path_id<SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN> m_source<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>rewind<SPAN class="op">(</SPAN>path_id<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> vertex<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN><SPAN class="op">*</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN><SPAN class="op">*</SPAN> y<SPAN class="op">)</SPAN> 
+        <SPAN class="op">{</SPAN> 
+            <SPAN class="op">++</SPAN>m_count<SPAN class="op">;</SPAN> 
+            <SPAN class="kw1">return</SPAN> m_source<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>vertex<SPAN class="op">(</SPAN>x<SPAN class="op">,</SPAN> y<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN> 
+        <SPAN class="op">}</SPAN>
+
+    <SPAN class="kw1">private</SPAN>:
+        VertexSource<SPAN class="op">*</SPAN> m_source<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> m_count<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+
+
+
+    <SPAN class="rem">//============================================================================</SPAN>
+    <SPAN class="rem">// Basic path attributes</SPAN>
+    <SPAN class="kw1">struct</SPAN> path_attributes
+    <SPAN class="op">{</SPAN>
+        <SPAN class="kw1">unsigned</SPAN>     index<SPAN class="op">;</SPAN>
+        <A href="../include/agg_color_rgba.h.html#rgba8">rgba8</A>        fill_color<SPAN class="op">;</SPAN>
+        <A href="../include/agg_color_rgba.h.html#rgba8">rgba8</A>        stroke_color<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">bool</SPAN>         fill_flag<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">bool</SPAN>         stroke_flag<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">bool</SPAN>         even_odd_flag<SPAN class="op">;</SPAN>
+        <A href="../include/agg_math_stroke.h.html#line_join_e">line_join_e</A>  line_join<SPAN class="op">;</SPAN>
+        <A href="../include/agg_math_stroke.h.html#line_cap_e">line_cap_e</A>   line_cap<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">double</SPAN>       miter_limit<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">double</SPAN>       stroke_width<SPAN class="op">;</SPAN>
+        <A href="../include/agg_trans_affine.h.html#trans_affine">trans_affine</A> transform<SPAN class="op">;</SPAN>
+
+        <SPAN class="rem">// Empty constructor</SPAN>
+        path_attributes<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> :
+            index<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            fill_color<SPAN class="op">(</SPAN><A href="../include/agg_color_rgba.h.html#rgba">rgba</A><SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            stroke_color<SPAN class="op">(</SPAN><A href="../include/agg_color_rgba.h.html#rgba">rgba</A><SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            fill_flag<SPAN class="op">(</SPAN><SPAN class="kw1">true</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            stroke_flag<SPAN class="op">(</SPAN><SPAN class="kw1">false</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            even_odd_flag<SPAN class="op">(</SPAN><SPAN class="kw1">false</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            line_join<SPAN class="op">(</SPAN>miter_join<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            line_cap<SPAN class="op">(</SPAN>butt_cap<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            miter_limit<SPAN class="op">(</SPAN><SPAN class="num">4</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            stroke_width<SPAN class="op">(</SPAN><SPAN class="num">1</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            transform<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">// Copy constructor</SPAN>
+        path_attributes<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> path_attributes<SPAN class="op">&amp;</SPAN> attr<SPAN class="op">)</SPAN> :
+            index<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>index<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            fill_color<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>fill_color<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            stroke_color<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>stroke_color<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            fill_flag<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>fill_flag<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            stroke_flag<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>stroke_flag<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            even_odd_flag<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>even_odd_flag<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            line_join<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>line_join<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            line_cap<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>line_cap<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            miter_limit<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>miter_limit<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            stroke_width<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>stroke_width<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            transform<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>transform<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">// Copy constructor with new index value</SPAN>
+        path_attributes<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> path_attributes<SPAN class="op">&amp;</SPAN> attr<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> idx<SPAN class="op">)</SPAN> :
+            index<SPAN class="op">(</SPAN>idx<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            fill_color<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>fill_color<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            stroke_color<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>stroke_color<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            fill_flag<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>fill_flag<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            stroke_flag<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>stroke_flag<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            even_odd_flag<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>even_odd_flag<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            line_join<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>line_join<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            line_cap<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>line_cap<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            miter_limit<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>miter_limit<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            stroke_width<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>stroke_width<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            transform<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>transform<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+        <SPAN class="op">}</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+
+    <SPAN class="rem">//============================================================================</SPAN>
+    <SPAN class="rem">// Path container and renderer. </SPAN>
+    <SPAN class="kw1">class</SPAN> path_renderer
+    <SPAN class="op">{</SPAN>
+    <SPAN class="kw1">public</SPAN>:
+        <SPAN class="kw1">typedef</SPAN> <A href="../include/agg_array.h.html#pod_deque">pod_deque</A><SPAN class="op">&lt;</SPAN>path_attributes<SPAN class="op">&gt;</SPAN>     attr_storage<SPAN class="op">;</SPAN>
+
+        <SPAN class="kw1">typedef</SPAN> <A href="../include/agg_conv_curve.h.html#conv_curve">conv_curve</A><SPAN class="op">&lt;</SPAN><A href="../include/agg_path_storage.h.html#path_storage">path_storage</A><SPAN class="op">&gt;</SPAN>       curved<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> conv_count<SPAN class="op">&lt;</SPAN>curved<SPAN class="op">&gt;</SPAN>             curved_count<SPAN class="op">;</SPAN>
+
+        <SPAN class="kw1">typedef</SPAN> <A href="../include/agg_conv_stroke.h.html#conv_stroke">conv_stroke</A><SPAN class="op">&lt;</SPAN>curved_count<SPAN class="op">&gt;</SPAN>      curved_stroked<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> <A href="../include/agg_conv_transform.h.html#conv_transform">conv_transform</A><SPAN class="op">&lt;</SPAN>curved_stroked<SPAN class="op">&gt;</SPAN> curved_stroked_trans<SPAN class="op">;</SPAN>
+
+        <SPAN class="kw1">typedef</SPAN> <A href="../include/agg_conv_transform.h.html#conv_transform">conv_transform</A><SPAN class="op">&lt;</SPAN>curved_count<SPAN class="op">&gt;</SPAN>   curved_trans<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> <A href="../include/agg_conv_contour.h.html#conv_contour">conv_contour</A><SPAN class="op">&lt;</SPAN>curved_trans<SPAN class="op">&gt;</SPAN>     curved_trans_contour<SPAN class="op">;</SPAN>
+
+        path_renderer<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+        <SPAN class="kw1">void</SPAN> remove_all<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+        <SPAN class="rem">// Use these functions as follows:</SPAN>
+        <SPAN class="rem">// begin_path() when the XML tag &lt;path&gt; comes (&quot;start_element&quot; handler)</SPAN>
+        <SPAN class="rem">// parse_path() on &quot;d=&quot; tag attribute</SPAN>
+        <SPAN class="rem">// end_path() when parsing of the entire tag is done.</SPAN>
+        <SPAN class="kw1">void</SPAN> begin_path<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> parse_path<SPAN class="op">(</SPAN>path_tokenizer<SPAN class="op">&amp;</SPAN> tok<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> end_path<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+        <SPAN class="rem">// The following functions are essentially a &quot;reflection&quot; of</SPAN>
+        <SPAN class="rem">// the respective SVG path commands.</SPAN>
+        <SPAN class="kw1">void</SPAN> move_to<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> y<SPAN class="op">,</SPAN> <SPAN class="kw1">bool</SPAN> rel<SPAN class="op">=</SPAN><SPAN class="kw1">false</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>   <SPAN class="rem">// M, m</SPAN>
+        <SPAN class="kw1">void</SPAN> line_to<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> x<SPAN class="op">,</SPAN>  <SPAN class="kw1">double</SPAN> y<SPAN class="op">,</SPAN> <SPAN class="kw1">bool</SPAN> rel<SPAN class="op">=</SPAN><SPAN class="kw1">false</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>  <SPAN class="rem">// L, l</SPAN>
+        <SPAN class="kw1">void</SPAN> hline_to<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">bool</SPAN> rel<SPAN class="op">=</SPAN><SPAN class="kw1">false</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>            <SPAN class="rem">// H, h</SPAN>
+        <SPAN class="kw1">void</SPAN> vline_to<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> y<SPAN class="op">,</SPAN> <SPAN class="kw1">bool</SPAN> rel<SPAN class="op">=</SPAN><SPAN class="kw1">false</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>            <SPAN class="rem">// V, v</SPAN>
+        <SPAN class="kw1">void</SPAN> <A href="../include/agg_curves.h.html#curve3">curve3</A><SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> x1<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> y1<SPAN class="op">,</SPAN>                   <SPAN class="rem">// Q, q</SPAN>
+                    <SPAN class="kw1">double</SPAN> x<SPAN class="op">,</SPAN>  <SPAN class="kw1">double</SPAN> y<SPAN class="op">,</SPAN> <SPAN class="kw1">bool</SPAN> rel<SPAN class="op">=</SPAN><SPAN class="kw1">false</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> <A href="../include/agg_curves.h.html#curve3">curve3</A><SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> y<SPAN class="op">,</SPAN> <SPAN class="kw1">bool</SPAN> rel<SPAN class="op">=</SPAN><SPAN class="kw1">false</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>    <SPAN class="rem">// T, t</SPAN>
+        <SPAN class="kw1">void</SPAN> <A href="../include/agg_curves.h.html#curve4">curve4</A><SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> x1<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> y1<SPAN class="op">,</SPAN>                   <SPAN class="rem">// C, c</SPAN>
+                    <SPAN class="kw1">double</SPAN> x2<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> y2<SPAN class="op">,</SPAN> 
+                    <SPAN class="kw1">double</SPAN> x<SPAN class="op">,</SPAN>  <SPAN class="kw1">double</SPAN> y<SPAN class="op">,</SPAN> <SPAN class="kw1">bool</SPAN> rel<SPAN class="op">=</SPAN><SPAN class="kw1">false</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> <A href="../include/agg_curves.h.html#curve4">curve4</A><SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> x2<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> y2<SPAN class="op">,</SPAN>                   <SPAN class="rem">// S, s</SPAN>
+                    <SPAN class="kw1">double</SPAN> x<SPAN class="op">,</SPAN>  <SPAN class="kw1">double</SPAN> y<SPAN class="op">,</SPAN> <SPAN class="kw1">bool</SPAN> rel<SPAN class="op">=</SPAN><SPAN class="kw1">false</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> close_subpath<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>                               <SPAN class="rem">// Z, z</SPAN>
+
+        <SPAN class="kw1">template</SPAN><SPAN class="op">&lt;</SPAN><SPAN class="kw1">class</SPAN> VertexSource<SPAN class="op">&gt;</SPAN> 
+        <SPAN class="kw1">void</SPAN> add_path<SPAN class="op">(</SPAN>VertexSource<SPAN class="op">&amp;</SPAN> vs<SPAN class="op">,</SPAN> 
+                      <SPAN class="kw1">unsigned</SPAN> path_id <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">,</SPAN> 
+                      <SPAN class="kw1">bool</SPAN> solid_path <SPAN class="op">=</SPAN> <SPAN class="kw1">true</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            m_storage<SPAN class="op">.</SPAN>add_path<SPAN class="op">(</SPAN>vs<SPAN class="op">,</SPAN> path_id<SPAN class="op">,</SPAN> solid_path<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+
+        <SPAN class="kw1">unsigned</SPAN> vertex_count<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="op">{</SPAN> <SPAN class="kw1">return</SPAN> m_curved_count<SPAN class="op">.</SPAN>count<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+        
+
+        <SPAN class="rem">// Call these functions on &lt;g&gt; tag (start_element, end_element respectively)</SPAN>
+        <SPAN class="kw1">void</SPAN> push_attr<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> pop_attr<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+        <SPAN class="rem">// Attribute setting functions.</SPAN>
+        <SPAN class="kw1">void</SPAN> fill<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <A href="../include/agg_color_rgba.h.html#rgba8">rgba8</A><SPAN class="op">&amp;</SPAN> f<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> stroke<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <A href="../include/agg_color_rgba.h.html#rgba8">rgba8</A><SPAN class="op">&amp;</SPAN> s<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> even_odd<SPAN class="op">(</SPAN><SPAN class="kw1">bool</SPAN> flag<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> stroke_width<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> w<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> fill_none<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> stroke_none<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> fill_opacity<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> op<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> stroke_opacity<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> op<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> line_join<SPAN class="op">(</SPAN><A href="../include/agg_math_stroke.h.html#line_join_e">line_join_e</A> join<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> line_cap<SPAN class="op">(</SPAN><A href="../include/agg_math_stroke.h.html#line_cap_e">line_cap_e</A> cap<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">void</SPAN> miter_limit<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> ml<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <A href="../include/agg_trans_affine.h.html#trans_affine">trans_affine</A><SPAN class="op">&amp;</SPAN> transform<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+        <SPAN class="rem">// Make all polygons CCW-oriented</SPAN>
+        <SPAN class="kw1">void</SPAN> arrange_orientations<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            m_storage<SPAN class="op">.</SPAN>arrange_orientations_all_paths<SPAN class="op">(</SPAN><A href="../include/agg_basics.h.html#path_flags_ccw">path_flags_ccw</A><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">// Expand all polygons </SPAN>
+        <SPAN class="kw1">void</SPAN> expand<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> value<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            m_curved_trans_contour<SPAN class="op">.</SPAN>width<SPAN class="op">(</SPAN>value<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="kw1">unsigned</SPAN> <SPAN class="kw1">operator</SPAN> <SPAN class="op">[</SPAN><SPAN class="op">]</SPAN><SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> idx<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            m_transform <SPAN class="op">=</SPAN> m_attr_storage<SPAN class="op">[</SPAN>idx<SPAN class="op">]</SPAN><SPAN class="op">.</SPAN>transform<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> m_attr_storage<SPAN class="op">[</SPAN>idx<SPAN class="op">]</SPAN><SPAN class="op">.</SPAN>index<SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="kw1">void</SPAN> <A href="../include/agg_bounding_rect.h.html#bounding_rect">bounding_rect</A><SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN><SPAN class="op">*</SPAN> x1<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN><SPAN class="op">*</SPAN> y1<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN><SPAN class="op">*</SPAN> x2<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN><SPAN class="op">*</SPAN> y2<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            agg::<A href="../include/agg_conv_transform.h.html#conv_transform">conv_transform</A><SPAN class="op">&lt;</SPAN>agg::<A href="../include/agg_path_storage.h.html#path_storage">path_storage</A><SPAN class="op">&gt;</SPAN> trans<SPAN class="op">(</SPAN>m_storage<SPAN class="op">,</SPAN> m_transform<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            agg::<A href="../include/agg_bounding_rect.h.html#bounding_rect">bounding_rect</A><SPAN class="op">(</SPAN>trans<SPAN class="op">,</SPAN> <SPAN class="op">*</SPAN><SPAN class="kw1">this</SPAN><SPAN class="op">,</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">,</SPAN> m_attr_storage<SPAN class="op">.</SPAN>size<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> x1<SPAN class="op">,</SPAN> y1<SPAN class="op">,</SPAN> x2<SPAN class="op">,</SPAN> y2<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">// Rendering. One can specify two additional parameters: </SPAN>
+        <SPAN class="rem">// <A href="../include/agg_trans_affine.h.html#trans_affine">trans_affine</A> and opacity. They can be used to transform the whole</SPAN>
+        <SPAN class="rem">// image and/or to make it translucent.</SPAN>
+        <SPAN class="kw1">template</SPAN><SPAN class="op">&lt;</SPAN><SPAN class="kw1">class</SPAN> Rasterizer<SPAN class="op">,</SPAN> <SPAN class="kw1">class</SPAN> Scanline<SPAN class="op">,</SPAN> <SPAN class="kw1">class</SPAN> Renderer<SPAN class="op">&gt;</SPAN> 
+        <SPAN class="kw1">void</SPAN> render<SPAN class="op">(</SPAN>Rasterizer<SPAN class="op">&amp;</SPAN> ras<SPAN class="op">,</SPAN> 
+                    Scanline<SPAN class="op">&amp;</SPAN> sl<SPAN class="op">,</SPAN>
+                    Renderer<SPAN class="op">&amp;</SPAN> ren<SPAN class="op">,</SPAN> 
+                    <SPAN class="kw1">const</SPAN> <A href="../include/agg_trans_affine.h.html#trans_affine">trans_affine</A><SPAN class="op">&amp;</SPAN> mtx<SPAN class="op">,</SPAN> 
+                    <SPAN class="kw1">const</SPAN> <A href="../include/agg_basics.h.html#rect">rect</A><SPAN class="op">&amp;</SPAN> cb<SPAN class="op">,</SPAN>
+                    <SPAN class="kw1">double</SPAN> opacity<SPAN class="op">=</SPAN><SPAN class="num">1</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">unsigned</SPAN> i<SPAN class="op">;</SPAN>
+
+            ras<SPAN class="op">.</SPAN>clip_box<SPAN class="op">(</SPAN>cb<SPAN class="op">.</SPAN>x1<SPAN class="op">,</SPAN> cb<SPAN class="op">.</SPAN>y1<SPAN class="op">,</SPAN> cb<SPAN class="op">.</SPAN>x2<SPAN class="op">,</SPAN> cb<SPAN class="op">.</SPAN>y2<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            m_curved_count<SPAN class="op">.</SPAN>count<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+            <SPAN class="kw1">for</SPAN><SPAN class="op">(</SPAN>i <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN> i <SPAN class="op">&lt;</SPAN> m_attr_storage<SPAN class="op">.</SPAN>size<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN> i<SPAN class="op">++</SPAN><SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                <SPAN class="kw1">const</SPAN> path_attributes<SPAN class="op">&amp;</SPAN> attr <SPAN class="op">=</SPAN> m_attr_storage<SPAN class="op">[</SPAN>i<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                m_transform <SPAN class="op">=</SPAN> attr<SPAN class="op">.</SPAN>transform<SPAN class="op">;</SPAN>
+                m_transform <SPAN class="op">*=</SPAN> mtx<SPAN class="op">;</SPAN>
+                <SPAN class="kw1">double</SPAN> scl <SPAN class="op">=</SPAN> m_transform<SPAN class="op">.</SPAN>scale<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="rem">//m_curved.approximation_method(curve_inc);</SPAN>
+                m_curved<SPAN class="op">.</SPAN>approximation_scale<SPAN class="op">(</SPAN>scl<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                m_curved<SPAN class="op">.</SPAN>angle_tolerance<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+                <A href="../include/agg_color_rgba.h.html#rgba8">rgba8</A> color<SPAN class="op">;</SPAN>
+
+                <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>fill_flag<SPAN class="op">)</SPAN>
+                <SPAN class="op">{</SPAN>
+                    ras<SPAN class="op">.</SPAN>reset<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    ras<SPAN class="op">.</SPAN>filling_rule<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>even_odd_flag ? fill_even_odd : fill_non_zero<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>fabs<SPAN class="op">(</SPAN>m_curved_trans_contour<SPAN class="op">.</SPAN>width<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&lt;</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0001</SPAN><SPAN class="op">)</SPAN>
+                    <SPAN class="op">{</SPAN>
+                        ras<SPAN class="op">.</SPAN>add_path<SPAN class="op">(</SPAN>m_curved_trans<SPAN class="op">,</SPAN> attr<SPAN class="op">.</SPAN>index<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    <SPAN class="op">}</SPAN>
+                    <SPAN class="kw1">else</SPAN>
+                    <SPAN class="op">{</SPAN>
+                        m_curved_trans_contour<SPAN class="op">.</SPAN>miter_limit<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>miter_limit<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                        ras<SPAN class="op">.</SPAN>add_path<SPAN class="op">(</SPAN>m_curved_trans_contour<SPAN class="op">,</SPAN> attr<SPAN class="op">.</SPAN>index<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    <SPAN class="op">}</SPAN>
+
+                    color <SPAN class="op">=</SPAN> attr<SPAN class="op">.</SPAN>fill_color<SPAN class="op">;</SPAN>
+                    color<SPAN class="op">.</SPAN>opacity<SPAN class="op">(</SPAN>color<SPAN class="op">.</SPAN>opacity<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> opacity<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    ren<SPAN class="op">.</SPAN>color<SPAN class="op">(</SPAN>color<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    agg::<A href="../include/agg_render_scanlines.h.html#render_scanlines">render_scanlines</A><SPAN class="op">(</SPAN>ras<SPAN class="op">,</SPAN> sl<SPAN class="op">,</SPAN> ren<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="op">}</SPAN>
+
+                <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>stroke_flag<SPAN class="op">)</SPAN>
+                <SPAN class="op">{</SPAN>
+                    m_curved_stroked<SPAN class="op">.</SPAN>width<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>stroke_width<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    <SPAN class="rem">//m_curved_stroked.line_join((attr.line_join == miter_join) ? miter_join_round : attr.line_join);</SPAN>
+                    m_curved_stroked<SPAN class="op">.</SPAN>line_join<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>line_join<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    m_curved_stroked<SPAN class="op">.</SPAN>line_cap<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>line_cap<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    m_curved_stroked<SPAN class="op">.</SPAN>miter_limit<SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>miter_limit<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    m_curved_stroked<SPAN class="op">.</SPAN>approximation_scale<SPAN class="op">(</SPAN>scl<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+                    <SPAN class="rem">// If the *visual* line width is considerable we </SPAN>
+                    <SPAN class="rem">// turn on processing of curve cusps.</SPAN>
+                    <SPAN class="rem">//---------------------</SPAN>
+                    <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>attr<SPAN class="op">.</SPAN>stroke_width <SPAN class="op">*</SPAN> scl <SPAN class="op">&gt;</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN>
+                    <SPAN class="op">{</SPAN>
+                        m_curved<SPAN class="op">.</SPAN>angle_tolerance<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">2</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    <SPAN class="op">}</SPAN>
+                    ras<SPAN class="op">.</SPAN>reset<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    ras<SPAN class="op">.</SPAN>filling_rule<SPAN class="op">(</SPAN>fill_non_zero<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    ras<SPAN class="op">.</SPAN>add_path<SPAN class="op">(</SPAN>m_curved_stroked_trans<SPAN class="op">,</SPAN> attr<SPAN class="op">.</SPAN>index<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    color <SPAN class="op">=</SPAN> attr<SPAN class="op">.</SPAN>stroke_color<SPAN class="op">;</SPAN>
+                    color<SPAN class="op">.</SPAN>opacity<SPAN class="op">(</SPAN>color<SPAN class="op">.</SPAN>opacity<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> opacity<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    ren<SPAN class="op">.</SPAN>color<SPAN class="op">(</SPAN>color<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    agg::<A href="../include/agg_render_scanlines.h.html#render_scanlines">render_scanlines</A><SPAN class="op">(</SPAN>ras<SPAN class="op">,</SPAN> sl<SPAN class="op">,</SPAN> ren<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="op">}</SPAN>
+            <SPAN class="op">}</SPAN>
+        <SPAN class="op">}</SPAN>
+
+    <SPAN class="kw1">private</SPAN>:
+        path_attributes<SPAN class="op">&amp;</SPAN> cur_attr<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+        <A href="../include/agg_path_storage.h.html#path_storage">path_storage</A>   m_storage<SPAN class="op">;</SPAN>
+        attr_storage   m_attr_storage<SPAN class="op">;</SPAN>
+        attr_storage   m_attr_stack<SPAN class="op">;</SPAN>
+        <A href="../include/agg_trans_affine.h.html#trans_affine">trans_affine</A>   m_transform<SPAN class="op">;</SPAN>
+
+        curved                       m_curved<SPAN class="op">;</SPAN>
+        curved_count                 m_curved_count<SPAN class="op">;</SPAN>
+
+        curved_stroked               m_curved_stroked<SPAN class="op">;</SPAN>
+        curved_stroked_trans         m_curved_stroked_trans<SPAN class="op">;</SPAN>
+
+        curved_trans                 m_curved_trans<SPAN class="op">;</SPAN>
+        curved_trans_contour         m_curved_trans_contour<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+<SPAN class="op">}</SPAN>
+<SPAN class="op">}</SPAN>
+
+<SPAN class="kw2">#endif</SPAN>
+</PRE></TD></TR></TABLE><FONT style="margin-left:1em"><I></I></FONT><TABLE width="640px" bgcolor="#583927" height="1px" border="0" cellspacing="0" cellpadding="0" style="margin:0px;"><TR><TD></TD></TR></TABLE>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0">
+<TR><TD><CENTER><SPAN class="authors">
+Copyright <SPAN class="larger">&#169;</SPAN> 2002-2004
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+<TR><TD><CENTER><SPAN class="authors">
+Web Design and Programming
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+</TABLE>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+</HTML>

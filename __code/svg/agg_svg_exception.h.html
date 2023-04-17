@@ -1,0 +1,89 @@
+<HTML><HEAD><TITLE>Anti-Grain Geometry - </TITLE>
+<META http-equiv="Content-Type" content="text/html"/>
+<LINK rel="stylesheet" type="text/css" href="../../agg.styles.css"/>
+</HEAD>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0"><TR><TD><PRE><SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Anti-Grain Geometry - Version 2.3</SPAN>
+<SPAN class="rem">// Copyright (C) 2002-2005 Maxim Shemanarev (http://www.antigrain.com)</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// Permission to copy, use, modify, sell and distribute this software </SPAN>
+<SPAN class="rem">// is granted provided this copyright notice appears in all copies. </SPAN>
+<SPAN class="rem">// This software is provided &quot;as is&quot; without express or implied</SPAN>
+<SPAN class="rem">// warranty, and with no claim as to its suitability for any purpose.</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Contact: mcseem@antigrain.com</SPAN>
+<SPAN class="rem">//          mcseemagg@yahoo.com</SPAN>
+<SPAN class="rem">//          http://www.antigrain.com</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// SVG exception</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+
+<SPAN class="kw2">#ifndef</SPAN> AGG_SVG_EXCEPTION_INCLUDED
+<SPAN class="kw2">#define</SPAN> AGG_SVG_EXCEPTION_INCLUDED
+
+<SPAN class="kw2">#include</SPAN> <SPAN class="op">&lt;</SPAN>stdio<SPAN class="op">.</SPAN>h<SPAN class="op">&gt;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="op">&lt;</SPAN>string<SPAN class="op">.</SPAN>h<SPAN class="op">&gt;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="op">&lt;</SPAN>stdarg<SPAN class="op">.</SPAN>h<SPAN class="op">&gt;</SPAN>
+
+<SPAN class="kw1">namespace</SPAN> agg 
+<SPAN class="op">{</SPAN> 
+<SPAN class="kw1">namespace</SPAN> svg
+<SPAN class="op">{</SPAN>
+    <SPAN class="kw1">class</SPAN> exception
+    <SPAN class="op">{</SPAN>
+    <SPAN class="kw1">public</SPAN>:
+        ~exception<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">delete</SPAN> <SPAN class="op">[</SPAN><SPAN class="op">]</SPAN> m_msg<SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        exception<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> : m_msg<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+          
+        exception<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> fmt<SPAN class="op">,</SPAN> <SPAN class="op">.</SPAN><SPAN class="op">.</SPAN><SPAN class="op">.</SPAN><SPAN class="op">)</SPAN> :
+            m_msg<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>fmt<SPAN class="op">)</SPAN> 
+            <SPAN class="op">{</SPAN>
+                m_msg <SPAN class="op">=</SPAN> <SPAN class="kw1">new</SPAN> <SPAN class="kw1">char</SPAN> <SPAN class="op">[</SPAN><SPAN class="num">4096</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                va_list arg<SPAN class="op">;</SPAN>
+                va_start<SPAN class="op">(</SPAN>arg<SPAN class="op">,</SPAN> fmt<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                vsprintf<SPAN class="op">(</SPAN>m_msg<SPAN class="op">,</SPAN> fmt<SPAN class="op">,</SPAN> arg<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                va_end<SPAN class="op">(</SPAN>arg<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        exception<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> exception<SPAN class="op">&amp;</SPAN> exc<SPAN class="op">)</SPAN> :
+            m_msg<SPAN class="op">(</SPAN>exc<SPAN class="op">.</SPAN>m_msg ? <SPAN class="kw1">new</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">[</SPAN>strlen<SPAN class="op">(</SPAN>exc<SPAN class="op">.</SPAN>m_msg<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> : <SPAN class="num">0</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>m_msg<SPAN class="op">)</SPAN> strcpy<SPAN class="op">(</SPAN>m_msg<SPAN class="op">,</SPAN> exc<SPAN class="op">.</SPAN>m_msg<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+        
+        <SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> msg<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="op">{</SPAN> <SPAN class="kw1">return</SPAN> m_msg<SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+
+    <SPAN class="kw1">private</SPAN>:
+        <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> m_msg<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+<SPAN class="op">}</SPAN>
+<SPAN class="op">}</SPAN>
+
+<SPAN class="kw2">#endif</SPAN>
+</PRE></TD></TR></TABLE><FONT style="margin-left:1em"><I></I></FONT><TABLE width="640px" bgcolor="#583927" height="1px" border="0" cellspacing="0" cellpadding="0" style="margin:0px;"><TR><TD></TD></TR></TABLE>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0">
+<TR><TD><CENTER><SPAN class="authors">
+Copyright <SPAN class="larger">&#169;</SPAN> 2002-2004
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+<TR><TD><CENTER><SPAN class="authors">
+Web Design and Programming
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+</TABLE>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+</HTML>

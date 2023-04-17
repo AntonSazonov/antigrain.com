@@ -1,0 +1,99 @@
+<HTML><HEAD><TITLE>Anti-Grain Geometry - </TITLE>
+<META http-equiv="Content-Type" content="text/html"/>
+<LINK rel="stylesheet" type="text/css" href="../../agg.styles.css"/>
+</HEAD>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0"><TR><TD><PRE><SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Anti-Grain Geometry - Version 2.1</SPAN>
+<SPAN class="rem">// Copyright (C) 2002-2005 Maxim Shemanarev (http://www.antigrain.com)</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// Permission to copy, use, modify, sell and distribute this software </SPAN>
+<SPAN class="rem">// is granted provided this copyright notice appears in all copies. </SPAN>
+<SPAN class="rem">// This software is provided &quot;as is&quot; without express or implied</SPAN>
+<SPAN class="rem">// warranty, and with no claim as to its suitability for any purpose.</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Contact: mcseem@antigrain.com</SPAN>
+<SPAN class="rem">//          mcseemagg@yahoo.com</SPAN>
+<SPAN class="rem">//          http://www.antigrain.com</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+
+<SPAN class="kw2">#ifndef</SPAN> AGG_WARP_MAGNIFIER_INCLUDED
+<SPAN class="kw2">#define</SPAN> AGG_WARP_MAGNIFIER_INCLUDED
+
+<SPAN class="kw2">#include</SPAN> <SPAN class="op">&lt;</SPAN>math<SPAN class="op">.</SPAN>h<SPAN class="op">&gt;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="agg_basics.h.html">agg_basics.h</A>&quot;</SPAN>
+
+
+<SPAN class="kw1">namespace</SPAN> agg
+<SPAN class="op">{</SPAN>
+
+    <SPAN class="kw1">class</SPAN> <A href="agg_trans_warp_magnifier.h.html#trans_warp_magnifier">trans_warp_magnifier</A>
+    <SPAN class="op">{</SPAN>
+    <SPAN class="kw1">public</SPAN>:
+        <A href="agg_trans_warp_magnifier.h.html#trans_warp_magnifier">trans_warp_magnifier</A><SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> : m_xc<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> m_yc<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> m_magn<SPAN class="op">(</SPAN><SPAN class="num">1</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> m_radius<SPAN class="op">(</SPAN><SPAN class="num">1</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> m_warp<SPAN class="op">(</SPAN><SPAN class="kw1">false</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+ 
+        <SPAN class="kw1">void</SPAN> center<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN> y<SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN> m_xc <SPAN class="op">=</SPAN> x<SPAN class="op">;</SPAN> m_yc <SPAN class="op">=</SPAN> y<SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+        <SPAN class="kw1">void</SPAN> magnification<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> m<SPAN class="op">)</SPAN>    <SPAN class="op">{</SPAN> m_magn <SPAN class="op">=</SPAN> m<SPAN class="op">;</SPAN>         <SPAN class="op">}</SPAN>
+        <SPAN class="kw1">void</SPAN> radius<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN> r<SPAN class="op">)</SPAN>           <SPAN class="op">{</SPAN> m_radius <SPAN class="op">=</SPAN> r<SPAN class="op">;</SPAN>       <SPAN class="op">}</SPAN>
+        <SPAN class="kw1">void</SPAN> warp<SPAN class="op">(</SPAN><SPAN class="kw1">bool</SPAN> w<SPAN class="op">)</SPAN>               <SPAN class="op">{</SPAN> m_warp <SPAN class="op">=</SPAN> w<SPAN class="op">;</SPAN>         <SPAN class="op">}</SPAN>
+
+        <SPAN class="kw1">void</SPAN> transform<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN><SPAN class="op">*</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN><SPAN class="op">*</SPAN> y<SPAN class="op">)</SPAN> <SPAN class="kw1">const</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">double</SPAN> dx <SPAN class="op">=</SPAN> <SPAN class="op">*</SPAN>x <SPAN class="op">-</SPAN> m_xc<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">double</SPAN> dy <SPAN class="op">=</SPAN> <SPAN class="op">*</SPAN>y <SPAN class="op">-</SPAN> m_yc<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">double</SPAN> r <SPAN class="op">=</SPAN> sqrt<SPAN class="op">(</SPAN>dx <SPAN class="op">*</SPAN> dx <SPAN class="op">+</SPAN> dy <SPAN class="op">*</SPAN> dy<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">double</SPAN> rm <SPAN class="op">=</SPAN> m_radius <SPAN class="op">/</SPAN> m_magn<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>r <SPAN class="op">&lt;</SPAN> rm<SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                <SPAN class="op">*</SPAN>x <SPAN class="op">=</SPAN> m_xc <SPAN class="op">+</SPAN> dx <SPAN class="op">*</SPAN> m_magn<SPAN class="op">;</SPAN>
+                <SPAN class="op">*</SPAN>y <SPAN class="op">=</SPAN> m_yc <SPAN class="op">+</SPAN> dy <SPAN class="op">*</SPAN> m_magn<SPAN class="op">;</SPAN>
+                <SPAN class="kw1">return</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>m_warp<SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                <SPAN class="kw1">double</SPAN> m <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>r <SPAN class="op">+</SPAN> rm <SPAN class="op">*</SPAN> <SPAN class="op">(</SPAN>m_magn <SPAN class="op">-</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">.</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">/</SPAN> r<SPAN class="op">;</SPAN>
+                <SPAN class="op">*</SPAN>x <SPAN class="op">=</SPAN> m_xc <SPAN class="op">+</SPAN> dx <SPAN class="op">*</SPAN> m<SPAN class="op">;</SPAN>
+                <SPAN class="op">*</SPAN>y <SPAN class="op">=</SPAN> m_yc <SPAN class="op">+</SPAN> dy <SPAN class="op">*</SPAN> m<SPAN class="op">;</SPAN>
+                <SPAN class="kw1">return</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>r <SPAN class="op">&lt;</SPAN> m_radius<SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                <SPAN class="kw1">double</SPAN> m <SPAN class="op">=</SPAN> m_radius <SPAN class="op">/</SPAN> r<SPAN class="op">;</SPAN>
+                <SPAN class="op">*</SPAN>x <SPAN class="op">=</SPAN> m_xc <SPAN class="op">+</SPAN> dx <SPAN class="op">*</SPAN> m<SPAN class="op">;</SPAN>
+                <SPAN class="op">*</SPAN>y <SPAN class="op">=</SPAN> m_yc <SPAN class="op">+</SPAN> dy <SPAN class="op">*</SPAN> m<SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+        <SPAN class="op">}</SPAN>
+
+    <SPAN class="kw1">private</SPAN>:
+        <SPAN class="kw1">double</SPAN> m_xc<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">double</SPAN> m_yc<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">double</SPAN> m_magn<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">double</SPAN> m_radius<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">bool</SPAN>   m_warp<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+
+
+<SPAN class="op">}</SPAN>
+
+
+<SPAN class="kw2">#endif</SPAN>
+
+</PRE></TD></TR></TABLE><FONT style="margin-left:1em"><I></I></FONT><TABLE width="640px" bgcolor="#583927" height="1px" border="0" cellspacing="0" cellpadding="0" style="margin:0px;"><TR><TD></TD></TR></TABLE>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0">
+<TR><TD><CENTER><SPAN class="authors">
+Copyright <SPAN class="larger">&#169;</SPAN> 2002-2004
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+<TR><TD><CENTER><SPAN class="authors">
+Web Design and Programming
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+</TABLE>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+</HTML>

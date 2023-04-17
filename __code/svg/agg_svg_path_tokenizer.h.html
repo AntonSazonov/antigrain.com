@@ -1,0 +1,134 @@
+<HTML><HEAD><TITLE>Anti-Grain Geometry - </TITLE>
+<META http-equiv="Content-Type" content="text/html"/>
+<LINK rel="stylesheet" type="text/css" href="../../agg.styles.css"/>
+</HEAD>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0"><TR><TD><PRE><SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Anti-Grain Geometry - Version 2.3</SPAN>
+<SPAN class="rem">// Copyright (C) 2002-2005 Maxim Shemanarev (http://www.antigrain.com)</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// Permission to copy, use, modify, sell and distribute this software </SPAN>
+<SPAN class="rem">// is granted provided this copyright notice appears in all copies. </SPAN>
+<SPAN class="rem">// This software is provided &quot;as is&quot; without express or implied</SPAN>
+<SPAN class="rem">// warranty, and with no claim as to its suitability for any purpose.</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Contact: mcseem@antigrain.com</SPAN>
+<SPAN class="rem">//          mcseemagg@yahoo.com</SPAN>
+<SPAN class="rem">//          http://www.antigrain.com</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// SVG path tokenizer.</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="kw2">#ifndef</SPAN> AGG_SVG_PATH_TOKENIZER_INCLUDED
+<SPAN class="kw2">#define</SPAN> AGG_SVG_PATH_TOKENIZER_INCLUDED
+
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="agg_svg_exception.h.html">agg_svg_exception.h</A>&quot;</SPAN>
+
+<SPAN class="kw1">namespace</SPAN> agg 
+<SPAN class="op">{</SPAN> 
+<SPAN class="kw1">namespace</SPAN> svg
+<SPAN class="op">{</SPAN>
+    <SPAN class="rem">// SVG path tokenizer. </SPAN>
+    <SPAN class="rem">// Example:</SPAN>
+    <SPAN class="rem">//</SPAN>
+    <SPAN class="rem">// agg::svg::path_tokenizer tok;</SPAN>
+    <SPAN class="rem">//</SPAN>
+    <SPAN class="rem">// tok.set_str(&quot;M-122.304 84.285L-122.304 84.285 122.203 86.179 &quot;);</SPAN>
+    <SPAN class="rem">// while(tok.next())</SPAN>
+    <SPAN class="rem">// {</SPAN>
+    <SPAN class="rem">//     printf(&quot;command=&#039;%c&#039; number=%f\n&quot;, </SPAN>
+    <SPAN class="rem">//             tok.last_command(), </SPAN>
+    <SPAN class="rem">//             tok.last_number());</SPAN>
+    <SPAN class="rem">// }</SPAN>
+    <SPAN class="rem">//</SPAN>
+    <SPAN class="rem">// The tokenizer does all the routine job of parsing the SVG paths.</SPAN>
+    <SPAN class="rem">// It doesn&#039;t recognize any graphical primitives, it even doesn&#039;t know</SPAN>
+    <SPAN class="rem">// anything about pairs of coordinates (X,Y). The purpose of this class </SPAN>
+    <SPAN class="rem">// is to tokenize the numeric values and commands. SVG paths can </SPAN>
+    <SPAN class="rem">// have single numeric values for Horizontal or Vertical line_to commands </SPAN>
+    <SPAN class="rem">// as well as more than two coordinates (4 or 6) for Bezier curves </SPAN>
+    <SPAN class="rem">// depending on the semantics of the command.</SPAN>
+    <SPAN class="rem">// The behaviour is as follows:</SPAN>
+    <SPAN class="rem">//</SPAN>
+    <SPAN class="rem">// Each call to next() returns true if there&#039;s new command or new numeric</SPAN>
+    <SPAN class="rem">// value or false when the path ends. How to interpret the result</SPAN>
+    <SPAN class="rem">// depends on the sematics of the command. For example, command &quot;C&quot; </SPAN>
+    <SPAN class="rem">// (cubic Bezier curve) implies 6 floating point numbers preceded by this </SPAN>
+    <SPAN class="rem">// command. If the command assumes no arguments (like z or Z) the </SPAN>
+    <SPAN class="rem">// the last_number() values won&#039;t change, that is, last_number() always</SPAN>
+    <SPAN class="rem">// returns the last recognized numeric value, so does last_command().</SPAN>
+    <SPAN class="rem">//===============================================================</SPAN>
+    <SPAN class="kw1">class</SPAN> path_tokenizer
+    <SPAN class="op">{</SPAN>
+     <SPAN class="kw1">public</SPAN>:
+        path_tokenizer<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+        <SPAN class="kw1">void</SPAN> set_path_str<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> str<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">bool</SPAN> next<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+        <SPAN class="kw1">double</SPAN> next<SPAN class="op">(</SPAN><SPAN class="kw1">char</SPAN> cmd<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+        <SPAN class="kw1">char</SPAN>   last_command<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="op">{</SPAN> <SPAN class="kw1">return</SPAN> m_last_command<SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+        <SPAN class="kw1">double</SPAN> last_number<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="op">{</SPAN> <SPAN class="kw1">return</SPAN> m_last_number<SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="kw1">private</SPAN>:
+        <SPAN class="kw1">static</SPAN> <SPAN class="kw1">void</SPAN> init_char_mask<SPAN class="op">(</SPAN><SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> mask<SPAN class="op">,</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> char_set<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+        <SPAN class="kw1">bool</SPAN> contains<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> mask<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> c<SPAN class="op">)</SPAN> <SPAN class="kw1">const</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">return</SPAN> <SPAN class="op">(</SPAN>mask<SPAN class="op">[</SPAN><SPAN class="op">(</SPAN>c <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">3</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&amp;</SPAN> <SPAN class="op">(</SPAN><SPAN class="num">256</SPAN><SPAN class="op">/</SPAN><SPAN class="num">8</SPAN><SPAN class="op">-</SPAN><SPAN class="num">1</SPAN><SPAN class="op">)</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">&amp;</SPAN> <SPAN class="op">(</SPAN><SPAN class="num">1</SPAN> <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="op">(</SPAN>c <SPAN class="op">&amp;</SPAN> <SPAN class="num">7</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">!=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="kw1">bool</SPAN> is_command<SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> c<SPAN class="op">)</SPAN> <SPAN class="kw1">const</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">return</SPAN> contains<SPAN class="op">(</SPAN>m_commands_mask<SPAN class="op">,</SPAN> c<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="kw1">bool</SPAN> is_numeric<SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> c<SPAN class="op">)</SPAN> <SPAN class="kw1">const</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">return</SPAN> contains<SPAN class="op">(</SPAN>m_numeric_mask<SPAN class="op">,</SPAN> c<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="kw1">bool</SPAN> is_separator<SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> c<SPAN class="op">)</SPAN> <SPAN class="kw1">const</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">return</SPAN> contains<SPAN class="op">(</SPAN>m_separators_mask<SPAN class="op">,</SPAN> c<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="kw1">bool</SPAN> parse_number<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+        <SPAN class="kw1">char</SPAN> m_separators_mask<SPAN class="op">[</SPAN><SPAN class="num">256</SPAN><SPAN class="op">/</SPAN><SPAN class="num">8</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">char</SPAN> m_commands_mask<SPAN class="op">[</SPAN><SPAN class="num">256</SPAN><SPAN class="op">/</SPAN><SPAN class="num">8</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">char</SPAN> m_numeric_mask<SPAN class="op">[</SPAN><SPAN class="num">256</SPAN><SPAN class="op">/</SPAN><SPAN class="num">8</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+
+        <SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN><SPAN class="op">*</SPAN> m_path<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">double</SPAN> m_last_number<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">char</SPAN>   m_last_command<SPAN class="op">;</SPAN>
+
+        <SPAN class="kw1">static</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN> s_commands<SPAN class="op">[</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">static</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN> s_numeric<SPAN class="op">[</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="kw1">static</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="kw1">char</SPAN> s_separators<SPAN class="op">[</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+<SPAN class="op">}</SPAN> <SPAN class="rem">//namespace svg</SPAN>
+<SPAN class="op">}</SPAN> <SPAN class="rem">//namespace agg</SPAN>
+
+
+<SPAN class="kw2">#endif</SPAN>
+</PRE></TD></TR></TABLE><FONT style="margin-left:1em"><I></I></FONT><TABLE width="640px" bgcolor="#583927" height="1px" border="0" cellspacing="0" cellpadding="0" style="margin:0px;"><TR><TD></TD></TR></TABLE>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0">
+<TR><TD><CENTER><SPAN class="authors">
+Copyright <SPAN class="larger">&#169;</SPAN> 2002-2004
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+<TR><TD><CENTER><SPAN class="authors">
+Web Design and Programming
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+</TABLE>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+</HTML>

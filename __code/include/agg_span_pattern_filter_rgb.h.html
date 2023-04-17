@@ -1,0 +1,588 @@
+<HTML><HEAD><TITLE>Anti-Grain Geometry - </TITLE>
+<META http-equiv="Content-Type" content="text/html"/>
+<LINK rel="stylesheet" type="text/css" href="../../agg.styles.css"/>
+</HEAD>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0"><TR><TD><PRE><SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Anti-Grain Geometry - Version 2.3</SPAN>
+<SPAN class="rem">// Copyright (C) 2002-2005 Maxim Shemanarev (http://www.antigrain.com)</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// Permission to copy, use, modify, sell and distribute this software </SPAN>
+<SPAN class="rem">// is granted provided this copyright notice appears in all copies. </SPAN>
+<SPAN class="rem">// This software is provided &quot;as is&quot; without express or implied</SPAN>
+<SPAN class="rem">// warranty, and with no claim as to its suitability for any purpose.</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Contact: mcseem@antigrain.com</SPAN>
+<SPAN class="rem">//          mcseemagg@yahoo.com</SPAN>
+<SPAN class="rem">//          http://www.antigrain.com</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// Adaptation for high precision colors has been sponsored by </SPAN>
+<SPAN class="rem">// Liberty Technology Systems, Inc., visit http://lib-sys.com</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// Liberty Technology Systems, Inc. is the provider of</SPAN>
+<SPAN class="rem">// PostScript and PDF technology for software developers.</SPAN>
+<SPAN class="rem">// </SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// classes <A href="agg_span_pattern_filter_rgb.h.html#span_pattern_filter_rgb">span_pattern_filter_rgb</A>*</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="kw2">#ifndef</SPAN> AGG_SPAN_PATTERN_FILTER_RGB_INCLUDED
+<SPAN class="kw2">#define</SPAN> AGG_SPAN_PATTERN_FILTER_RGB_INCLUDED
+
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="agg_basics.h.html">agg_basics.h</A>&quot;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="agg_color_rgba.h.html">agg_color_rgba.h</A>&quot;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="agg_span_pattern.h.html">agg_span_pattern.h</A>&quot;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="agg_span_image_filter.h.html">agg_span_image_filter.h</A>&quot;</SPAN>
+
+
+<SPAN class="kw1">namespace</SPAN> agg
+<SPAN class="op">{</SPAN>
+
+    <SPAN class="rem">//===========================================<A name="span_pattern_filter_rgb"><B></B></A><A href="agg_span_pattern_filter_rgb.h.html#span_pattern_filter_rgb">span_pattern_filter_rgb</A></SPAN>
+    <SPAN class="kw1">template</SPAN><SPAN class="op">&lt;</SPAN><SPAN class="kw1">class</SPAN> ColorT<SPAN class="op">,</SPAN>
+             <SPAN class="kw1">class</SPAN> Order<SPAN class="op">,</SPAN> 
+             <SPAN class="kw1">class</SPAN> Interpolator<SPAN class="op">,</SPAN>
+             <SPAN class="kw1">class</SPAN> WrapModeX<SPAN class="op">,</SPAN>
+             <SPAN class="kw1">class</SPAN> WrapModeY<SPAN class="op">,</SPAN>
+             <SPAN class="kw1">class</SPAN> Allocator <SPAN class="op">=</SPAN> <A href="agg_span_allocator.h.html#span_allocator">span_allocator</A><SPAN class="op">&lt;</SPAN>ColorT<SPAN class="op">&gt;</SPAN> <SPAN class="op">&gt;</SPAN>
+    <SPAN class="kw1">class</SPAN> span_pattern_filter_rgb_nn : 
+    <SPAN class="kw1">public</SPAN> <A href="agg_span_image_filter.h.html#span_image_filter">span_image_filter</A><SPAN class="op">&lt;</SPAN>ColorT<SPAN class="op">,</SPAN> Interpolator<SPAN class="op">,</SPAN> Allocator<SPAN class="op">&gt;</SPAN>
+    <SPAN class="op">{</SPAN>
+    <SPAN class="kw1">public</SPAN>:
+        <SPAN class="kw1">typedef</SPAN> ColorT color_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> Order order_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> Interpolator interpolator_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> Allocator alloc_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> <A href="agg_span_image_filter.h.html#span_image_filter">span_image_filter</A><SPAN class="op">&lt;</SPAN>color_type<SPAN class="op">,</SPAN> interpolator_type<SPAN class="op">,</SPAN> alloc_type<SPAN class="op">&gt;</SPAN> base_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> <SPAN class="kw1">typename</SPAN> color_type::value_type value_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> <SPAN class="kw1">typename</SPAN> color_type::calc_type calc_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">enum</SPAN> base_scale_e
+        <SPAN class="op">{</SPAN>
+            base_shift <SPAN class="op">=</SPAN> color_type::base_shift<SPAN class="op">,</SPAN>
+            base_mask  <SPAN class="op">=</SPAN> color_type::base_mask
+        <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        span_pattern_filter_rgb_nn<SPAN class="op">(</SPAN>alloc_type<SPAN class="op">&amp;</SPAN> alloc<SPAN class="op">)</SPAN> : 
+            base_type<SPAN class="op">(</SPAN>alloc<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_wrap_mode_x<SPAN class="op">(</SPAN><SPAN class="num">1</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_wrap_mode_y<SPAN class="op">(</SPAN><SPAN class="num">1</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        span_pattern_filter_rgb_nn<SPAN class="op">(</SPAN>alloc_type<SPAN class="op">&amp;</SPAN> alloc<SPAN class="op">,</SPAN>
+                                   <SPAN class="kw1">const</SPAN> <A href="../../doc/basic_renderers/basic_renderers.agdoc.html#rendering_buffer">rendering_buffer</A><SPAN class="op">&amp;</SPAN> src<SPAN class="op">,</SPAN> 
+                                   interpolator_type<SPAN class="op">&amp;</SPAN> intr<SPAN class="op">)</SPAN> :
+            base_type<SPAN class="op">(</SPAN>alloc<SPAN class="op">,</SPAN> src<SPAN class="op">,</SPAN> color_type<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> intr<SPAN class="op">,</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_wrap_mode_x<SPAN class="op">(</SPAN>src<SPAN class="op">.</SPAN>width<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_wrap_mode_y<SPAN class="op">(</SPAN>src<SPAN class="op">.</SPAN>height<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">void</SPAN> source_image<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <A href="../../doc/basic_renderers/basic_renderers.agdoc.html#rendering_buffer">rendering_buffer</A><SPAN class="op">&amp;</SPAN> src<SPAN class="op">)</SPAN> 
+        <SPAN class="op">{</SPAN> 
+            base_type::source_image<SPAN class="op">(</SPAN>src<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            m_wrap_mode_x <SPAN class="op">=</SPAN> WrapModeX<SPAN class="op">(</SPAN>src<SPAN class="op">.</SPAN>width<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            m_wrap_mode_y <SPAN class="op">=</SPAN> WrapModeY<SPAN class="op">(</SPAN>src<SPAN class="op">.</SPAN>height<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        color_type<SPAN class="op">*</SPAN> generate<SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">int</SPAN> y<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> len<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            color_type<SPAN class="op">*</SPAN> span <SPAN class="op">=</SPAN> base_type::allocator<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">.</SPAN>span<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            interpolator_type<SPAN class="op">&amp;</SPAN> intr <SPAN class="op">=</SPAN> base_type::interpolator<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            intr<SPAN class="op">.</SPAN>begin<SPAN class="op">(</SPAN>x <SPAN class="op">+</SPAN> base_type::filter_dx_dbl<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> 
+                       y <SPAN class="op">+</SPAN> base_type::filter_dy_dbl<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> len<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">const</SPAN> value_type <SPAN class="op">*</SPAN>fg_ptr<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">do</SPAN>
+            <SPAN class="op">{</SPAN>
+                intr<SPAN class="op">.</SPAN>coordinates<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>x<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>y<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+                x <SPAN class="op">=</SPAN> m_wrap_mode_x<SPAN class="op">(</SPAN>x <SPAN class="op">&gt;&gt;</SPAN> <A href="agg_image_filters.h.html#image_subpixel_shift">image_subpixel_shift</A><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                y <SPAN class="op">=</SPAN> m_wrap_mode_y<SPAN class="op">(</SPAN>y <SPAN class="op">&gt;&gt;</SPAN> <A href="agg_image_filters.h.html#image_subpixel_shift">image_subpixel_shift</A><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+                fg_ptr <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> value_type<SPAN class="op">*</SPAN><SPAN class="op">)</SPAN>base_type::source_image<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">.</SPAN>row<SPAN class="op">(</SPAN>y<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> x <SPAN class="op">*</SPAN> <SPAN class="num">3</SPAN><SPAN class="op">;</SPAN>
+                span<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>r <SPAN class="op">=</SPAN> fg_ptr<SPAN class="op">[</SPAN>order_type::R<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                span<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>g <SPAN class="op">=</SPAN> fg_ptr<SPAN class="op">[</SPAN>order_type::G<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                span<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>b <SPAN class="op">=</SPAN> fg_ptr<SPAN class="op">[</SPAN>order_type::B<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                span<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>a <SPAN class="op">=</SPAN> base_mask<SPAN class="op">;</SPAN>
+                <SPAN class="op">++</SPAN>span<SPAN class="op">;</SPAN>
+                <SPAN class="op">++</SPAN>intr<SPAN class="op">;</SPAN>
+
+            <SPAN class="op">}</SPAN> <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN><SPAN class="op">--</SPAN>len<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> base_type::allocator<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">.</SPAN>span<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+    <SPAN class="kw1">private</SPAN>:
+        WrapModeX m_wrap_mode_x<SPAN class="op">;</SPAN>
+        WrapModeY m_wrap_mode_y<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+
+
+
+
+
+
+
+
+
+    <SPAN class="rem">//=====================================<A name="span_pattern_filter_rgb_bilinear"><B></B></A><A href="agg_span_pattern_filter_rgb.h.html#span_pattern_filter_rgb_bilinear">span_pattern_filter_rgb_bilinear</A></SPAN>
+    <SPAN class="kw1">template</SPAN><SPAN class="op">&lt;</SPAN><SPAN class="kw1">class</SPAN> ColorT<SPAN class="op">,</SPAN>
+             <SPAN class="kw1">class</SPAN> Order<SPAN class="op">,</SPAN> 
+             <SPAN class="kw1">class</SPAN> Interpolator<SPAN class="op">,</SPAN>
+             <SPAN class="kw1">class</SPAN> WrapModeX<SPAN class="op">,</SPAN>
+             <SPAN class="kw1">class</SPAN> WrapModeY<SPAN class="op">,</SPAN>
+             <SPAN class="kw1">class</SPAN> Allocator <SPAN class="op">=</SPAN> <A href="agg_span_allocator.h.html#span_allocator">span_allocator</A><SPAN class="op">&lt;</SPAN>ColorT<SPAN class="op">&gt;</SPAN> <SPAN class="op">&gt;</SPAN>
+    <SPAN class="kw1">class</SPAN> <A href="agg_span_pattern_filter_rgb.h.html#span_pattern_filter_rgb_bilinear">span_pattern_filter_rgb_bilinear</A> : 
+    <SPAN class="kw1">public</SPAN> <A href="agg_span_image_filter.h.html#span_image_filter">span_image_filter</A><SPAN class="op">&lt;</SPAN>ColorT<SPAN class="op">,</SPAN> Interpolator<SPAN class="op">,</SPAN> Allocator<SPAN class="op">&gt;</SPAN>
+    <SPAN class="op">{</SPAN>
+    <SPAN class="kw1">public</SPAN>:
+        <SPAN class="kw1">typedef</SPAN> ColorT color_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> Order order_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> Interpolator interpolator_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> Allocator alloc_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> <A href="agg_span_image_filter.h.html#span_image_filter">span_image_filter</A><SPAN class="op">&lt;</SPAN>color_type<SPAN class="op">,</SPAN> interpolator_type<SPAN class="op">,</SPAN> alloc_type<SPAN class="op">&gt;</SPAN> base_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> <SPAN class="kw1">typename</SPAN> color_type::value_type value_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> <SPAN class="kw1">typename</SPAN> color_type::calc_type calc_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">enum</SPAN> base_scale_e
+        <SPAN class="op">{</SPAN>
+            base_shift <SPAN class="op">=</SPAN> color_type::base_shift<SPAN class="op">,</SPAN>
+            base_mask  <SPAN class="op">=</SPAN> color_type::base_mask
+        <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <A href="agg_span_pattern_filter_rgb.h.html#span_pattern_filter_rgb_bilinear">span_pattern_filter_rgb_bilinear</A><SPAN class="op">(</SPAN>alloc_type<SPAN class="op">&amp;</SPAN> alloc<SPAN class="op">)</SPAN> : 
+            base_type<SPAN class="op">(</SPAN>alloc<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_wrap_mode_x<SPAN class="op">(</SPAN><SPAN class="num">1</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_wrap_mode_y<SPAN class="op">(</SPAN><SPAN class="num">1</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <A href="agg_span_pattern_filter_rgb.h.html#span_pattern_filter_rgb_bilinear">span_pattern_filter_rgb_bilinear</A><SPAN class="op">(</SPAN>alloc_type<SPAN class="op">&amp;</SPAN> alloc<SPAN class="op">,</SPAN>
+                                         <SPAN class="kw1">const</SPAN> <A href="../../doc/basic_renderers/basic_renderers.agdoc.html#rendering_buffer">rendering_buffer</A><SPAN class="op">&amp;</SPAN> src<SPAN class="op">,</SPAN> 
+                                         interpolator_type<SPAN class="op">&amp;</SPAN> intr<SPAN class="op">)</SPAN> :
+            base_type<SPAN class="op">(</SPAN>alloc<SPAN class="op">,</SPAN> src<SPAN class="op">,</SPAN> color_type<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> intr<SPAN class="op">,</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_wrap_mode_x<SPAN class="op">(</SPAN>src<SPAN class="op">.</SPAN>width<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_wrap_mode_y<SPAN class="op">(</SPAN>src<SPAN class="op">.</SPAN>height<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//-------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">void</SPAN> source_image<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <A href="../../doc/basic_renderers/basic_renderers.agdoc.html#rendering_buffer">rendering_buffer</A><SPAN class="op">&amp;</SPAN> src<SPAN class="op">)</SPAN> 
+        <SPAN class="op">{</SPAN> 
+            base_type::source_image<SPAN class="op">(</SPAN>src<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            m_wrap_mode_x <SPAN class="op">=</SPAN> WrapModeX<SPAN class="op">(</SPAN>src<SPAN class="op">.</SPAN>width<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            m_wrap_mode_y <SPAN class="op">=</SPAN> WrapModeY<SPAN class="op">(</SPAN>src<SPAN class="op">.</SPAN>height<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        color_type<SPAN class="op">*</SPAN> generate<SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">int</SPAN> y<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> len<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            color_type<SPAN class="op">*</SPAN> span <SPAN class="op">=</SPAN> base_type::allocator<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">.</SPAN>span<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            interpolator_type<SPAN class="op">&amp;</SPAN> intr <SPAN class="op">=</SPAN> base_type::interpolator<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            intr<SPAN class="op">.</SPAN>begin<SPAN class="op">(</SPAN>x <SPAN class="op">+</SPAN> base_type::filter_dx_dbl<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> 
+                       y <SPAN class="op">+</SPAN> base_type::filter_dy_dbl<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> len<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            calc_type fg<SPAN class="op">[</SPAN><SPAN class="num">3</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">const</SPAN> value_type <SPAN class="op">*</SPAN>fg_ptr<SPAN class="op">;</SPAN>
+
+            <SPAN class="kw1">do</SPAN>
+            <SPAN class="op">{</SPAN>
+                <SPAN class="kw1">int</SPAN> x_hr<SPAN class="op">;</SPAN>
+                <SPAN class="kw1">int</SPAN> y_hr<SPAN class="op">;</SPAN>
+
+                intr<SPAN class="op">.</SPAN>coordinates<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>x_hr<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>y_hr<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+                x_hr <SPAN class="op">-=</SPAN> base_type::filter_dx_int<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                y_hr <SPAN class="op">-=</SPAN> base_type::filter_dy_int<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+                <SPAN class="kw1">int</SPAN> x_lr <SPAN class="op">=</SPAN> x_hr <SPAN class="op">&gt;&gt;</SPAN> <A href="agg_image_filters.h.html#image_subpixel_shift">image_subpixel_shift</A><SPAN class="op">;</SPAN>
+                <SPAN class="kw1">int</SPAN> y_lr <SPAN class="op">=</SPAN> y_hr <SPAN class="op">&gt;&gt;</SPAN> <A href="agg_image_filters.h.html#image_subpixel_shift">image_subpixel_shift</A><SPAN class="op">;</SPAN>
+
+                <SPAN class="kw1">unsigned</SPAN> x1 <SPAN class="op">=</SPAN> m_wrap_mode_x<SPAN class="op">(</SPAN>x_lr<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="kw1">unsigned</SPAN> x2 <SPAN class="op">=</SPAN> <SPAN class="op">++</SPAN>m_wrap_mode_x<SPAN class="op">;</SPAN>
+                x1 <SPAN class="op">*=</SPAN> <SPAN class="num">3</SPAN><SPAN class="op">;</SPAN>
+                x2 <SPAN class="op">*=</SPAN> <SPAN class="num">3</SPAN><SPAN class="op">;</SPAN>
+
+                <SPAN class="kw1">unsigned</SPAN> y1 <SPAN class="op">=</SPAN> m_wrap_mode_y<SPAN class="op">(</SPAN>y_lr<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="kw1">unsigned</SPAN> y2 <SPAN class="op">=</SPAN> <SPAN class="op">++</SPAN>m_wrap_mode_y<SPAN class="op">;</SPAN>
+                <SPAN class="kw1">const</SPAN> value_type<SPAN class="op">*</SPAN> ptr1 <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> value_type<SPAN class="op">*</SPAN><SPAN class="op">)</SPAN>base_type::source_image<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">.</SPAN>row<SPAN class="op">(</SPAN>y1<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="kw1">const</SPAN> value_type<SPAN class="op">*</SPAN> ptr2 <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> value_type<SPAN class="op">*</SPAN><SPAN class="op">)</SPAN>base_type::source_image<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">.</SPAN>row<SPAN class="op">(</SPAN>y2<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+                fg<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> 
+                fg<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> 
+                fg<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <A href="agg_image_filters.h.html#image_subpixel_size">image_subpixel_size</A> <SPAN class="op">*</SPAN> <A href="agg_image_filters.h.html#image_subpixel_size">image_subpixel_size</A> <SPAN class="op">/</SPAN> <SPAN class="num">2</SPAN><SPAN class="op">;</SPAN>
+
+                x_hr <SPAN class="op">&amp;=</SPAN> <A href="agg_image_filters.h.html#image_subpixel_mask">image_subpixel_mask</A><SPAN class="op">;</SPAN>
+                y_hr <SPAN class="op">&amp;=</SPAN> <A href="agg_image_filters.h.html#image_subpixel_mask">image_subpixel_mask</A><SPAN class="op">;</SPAN>
+
+                <SPAN class="kw1">int</SPAN> weight<SPAN class="op">;</SPAN>
+                fg_ptr <SPAN class="op">=</SPAN> ptr1 <SPAN class="op">+</SPAN> x1<SPAN class="op">;</SPAN>
+                weight <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_image_filters.h.html#image_subpixel_size">image_subpixel_size</A> <SPAN class="op">-</SPAN> x_hr<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> 
+                         <SPAN class="op">(</SPAN><A href="agg_image_filters.h.html#image_subpixel_size">image_subpixel_size</A> <SPAN class="op">-</SPAN> y_hr<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+
+                fg_ptr <SPAN class="op">=</SPAN> ptr1 <SPAN class="op">+</SPAN> x2<SPAN class="op">;</SPAN>
+                weight <SPAN class="op">=</SPAN> x_hr <SPAN class="op">*</SPAN> <SPAN class="op">(</SPAN><A href="agg_image_filters.h.html#image_subpixel_size">image_subpixel_size</A> <SPAN class="op">-</SPAN> y_hr<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+
+                fg_ptr <SPAN class="op">=</SPAN> ptr2 <SPAN class="op">+</SPAN> x1<SPAN class="op">;</SPAN>
+                weight <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_image_filters.h.html#image_subpixel_size">image_subpixel_size</A> <SPAN class="op">-</SPAN> x_hr<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> y_hr<SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+
+                fg_ptr <SPAN class="op">=</SPAN> ptr2 <SPAN class="op">+</SPAN> x2<SPAN class="op">;</SPAN>
+                weight <SPAN class="op">=</SPAN> x_hr <SPAN class="op">*</SPAN> y_hr<SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+
+                span<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>r <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>value_type<SPAN class="op">)</SPAN><SPAN class="op">(</SPAN>fg<SPAN class="op">[</SPAN>order_type::R<SPAN class="op">]</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <A href="agg_image_filters.h.html#image_subpixel_shift">image_subpixel_shift</A> <SPAN class="op">*</SPAN> <SPAN class="num">2</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                span<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>g <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>value_type<SPAN class="op">)</SPAN><SPAN class="op">(</SPAN>fg<SPAN class="op">[</SPAN>order_type::G<SPAN class="op">]</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <A href="agg_image_filters.h.html#image_subpixel_shift">image_subpixel_shift</A> <SPAN class="op">*</SPAN> <SPAN class="num">2</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                span<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>b <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>value_type<SPAN class="op">)</SPAN><SPAN class="op">(</SPAN>fg<SPAN class="op">[</SPAN>order_type::B<SPAN class="op">]</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <A href="agg_image_filters.h.html#image_subpixel_shift">image_subpixel_shift</A> <SPAN class="op">*</SPAN> <SPAN class="num">2</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                span<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>a <SPAN class="op">=</SPAN> base_mask<SPAN class="op">;</SPAN>
+                <SPAN class="op">++</SPAN>span<SPAN class="op">;</SPAN>
+                <SPAN class="op">++</SPAN>intr<SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN> <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN><SPAN class="op">--</SPAN>len<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+            <SPAN class="kw1">return</SPAN> base_type::allocator<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">.</SPAN>span<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+    <SPAN class="kw1">private</SPAN>:
+        WrapModeX m_wrap_mode_x<SPAN class="op">;</SPAN>
+        WrapModeY m_wrap_mode_y<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+
+
+
+
+
+
+    <SPAN class="rem">//=====================================<A name="span_pattern_filter_rgb_2x2"><B></B></A><A href="agg_span_pattern_filter_rgb.h.html#span_pattern_filter_rgb_2x2">span_pattern_filter_rgb_2x2</A></SPAN>
+    <SPAN class="kw1">template</SPAN><SPAN class="op">&lt;</SPAN><SPAN class="kw1">class</SPAN> ColorT<SPAN class="op">,</SPAN>
+             <SPAN class="kw1">class</SPAN> Order<SPAN class="op">,</SPAN> 
+             <SPAN class="kw1">class</SPAN> Interpolator<SPAN class="op">,</SPAN>
+             <SPAN class="kw1">class</SPAN> WrapModeX<SPAN class="op">,</SPAN>
+             <SPAN class="kw1">class</SPAN> WrapModeY<SPAN class="op">,</SPAN>
+             <SPAN class="kw1">class</SPAN> Allocator <SPAN class="op">=</SPAN> <A href="agg_span_allocator.h.html#span_allocator">span_allocator</A><SPAN class="op">&lt;</SPAN>ColorT<SPAN class="op">&gt;</SPAN> <SPAN class="op">&gt;</SPAN>
+    <SPAN class="kw1">class</SPAN> <A href="agg_span_pattern_filter_rgb.h.html#span_pattern_filter_rgb_2x2">span_pattern_filter_rgb_2x2</A> : 
+    <SPAN class="kw1">public</SPAN> <A href="agg_span_image_filter.h.html#span_image_filter">span_image_filter</A><SPAN class="op">&lt;</SPAN>ColorT<SPAN class="op">,</SPAN> Interpolator<SPAN class="op">,</SPAN> Allocator<SPAN class="op">&gt;</SPAN>
+    <SPAN class="op">{</SPAN>
+    <SPAN class="kw1">public</SPAN>:
+        <SPAN class="kw1">typedef</SPAN> ColorT color_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> Order order_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> Interpolator interpolator_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> Allocator alloc_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> <A href="agg_span_image_filter.h.html#span_image_filter">span_image_filter</A><SPAN class="op">&lt;</SPAN>color_type<SPAN class="op">,</SPAN> interpolator_type<SPAN class="op">,</SPAN> alloc_type<SPAN class="op">&gt;</SPAN> base_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> <SPAN class="kw1">typename</SPAN> color_type::value_type value_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> <SPAN class="kw1">typename</SPAN> color_type::calc_type calc_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">enum</SPAN> base_scale_e
+        <SPAN class="op">{</SPAN>
+            base_shift <SPAN class="op">=</SPAN> color_type::base_shift<SPAN class="op">,</SPAN>
+            base_mask  <SPAN class="op">=</SPAN> color_type::base_mask
+        <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <A href="agg_span_pattern_filter_rgb.h.html#span_pattern_filter_rgb_2x2">span_pattern_filter_rgb_2x2</A><SPAN class="op">(</SPAN>alloc_type<SPAN class="op">&amp;</SPAN> alloc<SPAN class="op">)</SPAN> : 
+            base_type<SPAN class="op">(</SPAN>alloc<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_wrap_mode_x<SPAN class="op">(</SPAN><SPAN class="num">1</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_wrap_mode_y<SPAN class="op">(</SPAN><SPAN class="num">1</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <A href="agg_span_pattern_filter_rgb.h.html#span_pattern_filter_rgb_2x2">span_pattern_filter_rgb_2x2</A><SPAN class="op">(</SPAN>alloc_type<SPAN class="op">&amp;</SPAN> alloc<SPAN class="op">,</SPAN>
+                                    <SPAN class="kw1">const</SPAN> <A href="../../doc/basic_renderers/basic_renderers.agdoc.html#rendering_buffer">rendering_buffer</A><SPAN class="op">&amp;</SPAN> src<SPAN class="op">,</SPAN> 
+                                    interpolator_type<SPAN class="op">&amp;</SPAN> intr<SPAN class="op">,</SPAN>
+                                    <SPAN class="kw1">const</SPAN> <A href="agg_image_filters.h.html#image_filter_lut">image_filter_lut</A><SPAN class="op">&amp;</SPAN> filter<SPAN class="op">)</SPAN> :
+            base_type<SPAN class="op">(</SPAN>alloc<SPAN class="op">,</SPAN> src<SPAN class="op">,</SPAN> color_type<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> intr<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>filter<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_wrap_mode_x<SPAN class="op">(</SPAN>src<SPAN class="op">.</SPAN>width<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_wrap_mode_y<SPAN class="op">(</SPAN>src<SPAN class="op">.</SPAN>height<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//-------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">void</SPAN> source_image<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <A href="../../doc/basic_renderers/basic_renderers.agdoc.html#rendering_buffer">rendering_buffer</A><SPAN class="op">&amp;</SPAN> src<SPAN class="op">)</SPAN> 
+        <SPAN class="op">{</SPAN> 
+            base_type::source_image<SPAN class="op">(</SPAN>src<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            m_wrap_mode_x <SPAN class="op">=</SPAN> WrapModeX<SPAN class="op">(</SPAN>src<SPAN class="op">.</SPAN>width<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            m_wrap_mode_y <SPAN class="op">=</SPAN> WrapModeY<SPAN class="op">(</SPAN>src<SPAN class="op">.</SPAN>height<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        color_type<SPAN class="op">*</SPAN> generate<SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">int</SPAN> y<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> len<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            color_type<SPAN class="op">*</SPAN> span <SPAN class="op">=</SPAN> base_type::allocator<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">.</SPAN>span<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            interpolator_type<SPAN class="op">&amp;</SPAN> intr <SPAN class="op">=</SPAN> base_type::interpolator<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            intr<SPAN class="op">.</SPAN>begin<SPAN class="op">(</SPAN>x <SPAN class="op">+</SPAN> base_type::filter_dx_dbl<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> 
+                       y <SPAN class="op">+</SPAN> base_type::filter_dy_dbl<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> len<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            calc_type fg<SPAN class="op">[</SPAN><SPAN class="num">3</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">const</SPAN> value_type <SPAN class="op">*</SPAN>fg_ptr<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">const</SPAN> <A href="agg_basics.h.html#int16">int16</A><SPAN class="op">*</SPAN> weight_array <SPAN class="op">=</SPAN> base_type::filter<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">.</SPAN>weight_array<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> 
+                                        <SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>base_type::filter<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">.</SPAN>diameter<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">/</SPAN><SPAN class="num">2</SPAN> <SPAN class="op">-</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&lt;&lt;</SPAN> 
+                                          <A href="agg_image_filters.h.html#image_subpixel_shift">image_subpixel_shift</A><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">do</SPAN>
+            <SPAN class="op">{</SPAN>
+                <SPAN class="kw1">int</SPAN> x_hr<SPAN class="op">;</SPAN>
+                <SPAN class="kw1">int</SPAN> y_hr<SPAN class="op">;</SPAN>
+
+                intr<SPAN class="op">.</SPAN>coordinates<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>x_hr<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>y_hr<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+                x_hr <SPAN class="op">-=</SPAN> base_type::filter_dx_int<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                y_hr <SPAN class="op">-=</SPAN> base_type::filter_dy_int<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+                <SPAN class="kw1">int</SPAN> x_lr <SPAN class="op">=</SPAN> x_hr <SPAN class="op">&gt;&gt;</SPAN> <A href="agg_image_filters.h.html#image_subpixel_shift">image_subpixel_shift</A><SPAN class="op">;</SPAN>
+                <SPAN class="kw1">int</SPAN> y_lr <SPAN class="op">=</SPAN> y_hr <SPAN class="op">&gt;&gt;</SPAN> <A href="agg_image_filters.h.html#image_subpixel_shift">image_subpixel_shift</A><SPAN class="op">;</SPAN>
+
+                <SPAN class="kw1">unsigned</SPAN> x1 <SPAN class="op">=</SPAN> m_wrap_mode_x<SPAN class="op">(</SPAN>x_lr<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="kw1">unsigned</SPAN> x2 <SPAN class="op">=</SPAN> <SPAN class="op">++</SPAN>m_wrap_mode_x<SPAN class="op">;</SPAN>
+                x1 <SPAN class="op">*=</SPAN> <SPAN class="num">3</SPAN><SPAN class="op">;</SPAN>
+                x2 <SPAN class="op">*=</SPAN> <SPAN class="num">3</SPAN><SPAN class="op">;</SPAN>
+
+                <SPAN class="kw1">unsigned</SPAN> y1 <SPAN class="op">=</SPAN> m_wrap_mode_y<SPAN class="op">(</SPAN>y_lr<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="kw1">unsigned</SPAN> y2 <SPAN class="op">=</SPAN> <SPAN class="op">++</SPAN>m_wrap_mode_y<SPAN class="op">;</SPAN>
+                <SPAN class="kw1">const</SPAN> value_type<SPAN class="op">*</SPAN> ptr1 <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> value_type<SPAN class="op">*</SPAN><SPAN class="op">)</SPAN>base_type::source_image<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">.</SPAN>row<SPAN class="op">(</SPAN>y1<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="kw1">const</SPAN> value_type<SPAN class="op">*</SPAN> ptr2 <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> value_type<SPAN class="op">*</SPAN><SPAN class="op">)</SPAN>base_type::source_image<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">.</SPAN>row<SPAN class="op">(</SPAN>y2<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+                fg<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> fg<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> fg<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <A href="agg_image_filters.h.html#image_filter_size">image_filter_size</A> <SPAN class="op">/</SPAN> <SPAN class="num">2</SPAN><SPAN class="op">;</SPAN>
+
+                x_hr <SPAN class="op">&amp;=</SPAN> <A href="agg_image_filters.h.html#image_subpixel_mask">image_subpixel_mask</A><SPAN class="op">;</SPAN>
+                y_hr <SPAN class="op">&amp;=</SPAN> <A href="agg_image_filters.h.html#image_subpixel_mask">image_subpixel_mask</A><SPAN class="op">;</SPAN>
+
+                <SPAN class="kw1">int</SPAN> weight<SPAN class="op">;</SPAN>
+                fg_ptr <SPAN class="op">=</SPAN> ptr1 <SPAN class="op">+</SPAN> x1<SPAN class="op">;</SPAN>
+                weight <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>weight_array<SPAN class="op">[</SPAN>x_hr <SPAN class="op">+</SPAN> <A href="agg_image_filters.h.html#image_subpixel_size">image_subpixel_size</A><SPAN class="op">]</SPAN> <SPAN class="op">*</SPAN> 
+                          weight_array<SPAN class="op">[</SPAN>y_hr <SPAN class="op">+</SPAN> <A href="agg_image_filters.h.html#image_subpixel_size">image_subpixel_size</A><SPAN class="op">]</SPAN> <SPAN class="op">+</SPAN> 
+                          <A href="agg_image_filters.h.html#image_filter_size">image_filter_size</A> <SPAN class="op">/</SPAN> <SPAN class="num">2</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> 
+                          <A href="agg_image_filters.h.html#image_filter_shift">image_filter_shift</A><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+
+                fg_ptr <SPAN class="op">=</SPAN> ptr1 <SPAN class="op">+</SPAN> x2<SPAN class="op">;</SPAN>
+                weight <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>weight_array<SPAN class="op">[</SPAN>x_hr<SPAN class="op">]</SPAN> <SPAN class="op">*</SPAN> 
+                          weight_array<SPAN class="op">[</SPAN>y_hr <SPAN class="op">+</SPAN> <A href="agg_image_filters.h.html#image_subpixel_size">image_subpixel_size</A><SPAN class="op">]</SPAN> <SPAN class="op">+</SPAN> 
+                          <A href="agg_image_filters.h.html#image_filter_size">image_filter_size</A> <SPAN class="op">/</SPAN> <SPAN class="num">2</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> 
+                          <A href="agg_image_filters.h.html#image_filter_shift">image_filter_shift</A><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+
+                fg_ptr <SPAN class="op">=</SPAN> ptr2 <SPAN class="op">+</SPAN> x1<SPAN class="op">;</SPAN>
+                weight <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>weight_array<SPAN class="op">[</SPAN>x_hr <SPAN class="op">+</SPAN> <A href="agg_image_filters.h.html#image_subpixel_size">image_subpixel_size</A><SPAN class="op">]</SPAN> <SPAN class="op">*</SPAN> 
+                          weight_array<SPAN class="op">[</SPAN>y_hr<SPAN class="op">]</SPAN> <SPAN class="op">+</SPAN> 
+                          <A href="agg_image_filters.h.html#image_filter_size">image_filter_size</A> <SPAN class="op">/</SPAN> <SPAN class="num">2</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> 
+                          <A href="agg_image_filters.h.html#image_filter_shift">image_filter_shift</A><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+
+                fg_ptr <SPAN class="op">=</SPAN> ptr2 <SPAN class="op">+</SPAN> x2<SPAN class="op">;</SPAN>
+                weight <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>weight_array<SPAN class="op">[</SPAN>x_hr<SPAN class="op">]</SPAN> <SPAN class="op">*</SPAN> 
+                          weight_array<SPAN class="op">[</SPAN>y_hr<SPAN class="op">]</SPAN> <SPAN class="op">+</SPAN> 
+                          <A href="agg_image_filters.h.html#image_filter_size">image_filter_size</A> <SPAN class="op">/</SPAN> <SPAN class="num">2</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> 
+                          <A href="agg_image_filters.h.html#image_filter_shift">image_filter_shift</A><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> weight <SPAN class="op">*</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+
+                fg<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">&gt;&gt;=</SPAN> <A href="agg_image_filters.h.html#image_filter_shift">image_filter_shift</A><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">&gt;&gt;=</SPAN> <A href="agg_image_filters.h.html#image_filter_shift">image_filter_shift</A><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">&gt;&gt;=</SPAN> <A href="agg_image_filters.h.html#image_filter_shift">image_filter_shift</A><SPAN class="op">;</SPAN>
+
+                <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>fg<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">&gt;</SPAN> base_mask<SPAN class="op">)</SPAN> fg<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> base_mask<SPAN class="op">;</SPAN>
+                <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>fg<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">&gt;</SPAN> base_mask<SPAN class="op">)</SPAN> fg<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> base_mask<SPAN class="op">;</SPAN>
+                <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>fg<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">&gt;</SPAN> base_mask<SPAN class="op">)</SPAN> fg<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> base_mask<SPAN class="op">;</SPAN>
+
+                span<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>r <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>value_type<SPAN class="op">)</SPAN>fg<SPAN class="op">[</SPAN>order_type::R<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                span<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>g <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>value_type<SPAN class="op">)</SPAN>fg<SPAN class="op">[</SPAN>order_type::G<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                span<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>b <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>value_type<SPAN class="op">)</SPAN>fg<SPAN class="op">[</SPAN>order_type::B<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                span<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>a <SPAN class="op">=</SPAN> base_mask<SPAN class="op">;</SPAN>
+                <SPAN class="op">++</SPAN>span<SPAN class="op">;</SPAN>
+                <SPAN class="op">++</SPAN>intr<SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN> <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN><SPAN class="op">--</SPAN>len<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+            <SPAN class="kw1">return</SPAN> base_type::allocator<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">.</SPAN>span<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+
+    <SPAN class="kw1">private</SPAN>:
+        WrapModeX m_wrap_mode_x<SPAN class="op">;</SPAN>
+        WrapModeY m_wrap_mode_y<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+
+
+
+
+
+
+
+
+
+    <SPAN class="rem">//==============================================<A name="span_pattern_filter_rgb"><B></B></A><A href="agg_span_pattern_filter_rgb.h.html#span_pattern_filter_rgb">span_pattern_filter_rgb</A></SPAN>
+    <SPAN class="kw1">template</SPAN><SPAN class="op">&lt;</SPAN><SPAN class="kw1">class</SPAN> ColorT<SPAN class="op">,</SPAN>
+             <SPAN class="kw1">class</SPAN> Order<SPAN class="op">,</SPAN> 
+             <SPAN class="kw1">class</SPAN> Interpolator<SPAN class="op">,</SPAN>
+             <SPAN class="kw1">class</SPAN> WrapModeX<SPAN class="op">,</SPAN>
+             <SPAN class="kw1">class</SPAN> WrapModeY<SPAN class="op">,</SPAN>
+             <SPAN class="kw1">class</SPAN> Allocator <SPAN class="op">=</SPAN> <A href="agg_span_allocator.h.html#span_allocator">span_allocator</A><SPAN class="op">&lt;</SPAN>ColorT<SPAN class="op">&gt;</SPAN> <SPAN class="op">&gt;</SPAN>
+             <SPAN class="kw1">class</SPAN> <A href="agg_span_pattern_filter_rgb.h.html#span_pattern_filter_rgb">span_pattern_filter_rgb</A> : 
+    <SPAN class="kw1">public</SPAN> <A href="agg_span_image_filter.h.html#span_image_filter">span_image_filter</A><SPAN class="op">&lt;</SPAN>ColorT<SPAN class="op">,</SPAN> Interpolator<SPAN class="op">,</SPAN> Allocator<SPAN class="op">&gt;</SPAN>
+    <SPAN class="op">{</SPAN>
+    <SPAN class="kw1">public</SPAN>:
+        <SPAN class="kw1">typedef</SPAN> ColorT color_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> Order order_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> Interpolator interpolator_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> Allocator alloc_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> <A href="agg_span_image_filter.h.html#span_image_filter">span_image_filter</A><SPAN class="op">&lt;</SPAN>color_type<SPAN class="op">,</SPAN> interpolator_type<SPAN class="op">,</SPAN> alloc_type<SPAN class="op">&gt;</SPAN> base_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> <SPAN class="kw1">typename</SPAN> color_type::value_type value_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> <SPAN class="kw1">typename</SPAN> color_type::calc_type calc_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">enum</SPAN> base_scale_e
+        <SPAN class="op">{</SPAN>
+            base_shift <SPAN class="op">=</SPAN> color_type::base_shift<SPAN class="op">,</SPAN>
+            base_mask  <SPAN class="op">=</SPAN> color_type::base_mask
+        <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <A href="agg_span_pattern_filter_rgb.h.html#span_pattern_filter_rgb">span_pattern_filter_rgb</A><SPAN class="op">(</SPAN>alloc_type<SPAN class="op">&amp;</SPAN> alloc<SPAN class="op">)</SPAN> : 
+            base_type<SPAN class="op">(</SPAN>alloc<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <A href="agg_span_pattern_filter_rgb.h.html#span_pattern_filter_rgb">span_pattern_filter_rgb</A><SPAN class="op">(</SPAN>alloc_type<SPAN class="op">&amp;</SPAN> alloc<SPAN class="op">,</SPAN>
+                                <SPAN class="kw1">const</SPAN> <A href="../../doc/basic_renderers/basic_renderers.agdoc.html#rendering_buffer">rendering_buffer</A><SPAN class="op">&amp;</SPAN> src<SPAN class="op">,</SPAN> 
+                                interpolator_type<SPAN class="op">&amp;</SPAN> intr<SPAN class="op">,</SPAN>
+                                <SPAN class="kw1">const</SPAN> <A href="agg_image_filters.h.html#image_filter_lut">image_filter_lut</A><SPAN class="op">&amp;</SPAN> filter<SPAN class="op">)</SPAN> :
+            base_type<SPAN class="op">(</SPAN>alloc<SPAN class="op">,</SPAN> src<SPAN class="op">,</SPAN> color_type<SPAN class="op">(</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN><SPAN class="num">0</SPAN><SPAN class="op">,</SPAN><SPAN class="num">0</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> intr<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>filter<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_wrap_mode_x<SPAN class="op">(</SPAN>src<SPAN class="op">.</SPAN>width<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN>
+            m_wrap_mode_y<SPAN class="op">(</SPAN>src<SPAN class="op">.</SPAN>height<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">void</SPAN> source_image<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <A href="../../doc/basic_renderers/basic_renderers.agdoc.html#rendering_buffer">rendering_buffer</A><SPAN class="op">&amp;</SPAN> src<SPAN class="op">)</SPAN> 
+        <SPAN class="op">{</SPAN> 
+            base_type::source_image<SPAN class="op">(</SPAN>src<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            m_wrap_mode_x <SPAN class="op">=</SPAN> WrapModeX<SPAN class="op">(</SPAN>src<SPAN class="op">.</SPAN>width<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            m_wrap_mode_y <SPAN class="op">=</SPAN> WrapModeY<SPAN class="op">(</SPAN>src<SPAN class="op">.</SPAN>height<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        color_type<SPAN class="op">*</SPAN> generate<SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">int</SPAN> y<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> len<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            color_type<SPAN class="op">*</SPAN> span <SPAN class="op">=</SPAN> base_type::allocator<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">.</SPAN>span<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            interpolator_type<SPAN class="op">&amp;</SPAN> intr <SPAN class="op">=</SPAN> base_type::interpolator<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            intr<SPAN class="op">.</SPAN>begin<SPAN class="op">(</SPAN>x <SPAN class="op">+</SPAN> base_type::filter_dx_dbl<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> 
+                       y <SPAN class="op">+</SPAN> base_type::filter_dy_dbl<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> len<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">int</SPAN> fg<SPAN class="op">[</SPAN><SPAN class="num">3</SPAN><SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+
+            <SPAN class="kw1">unsigned</SPAN>   diameter     <SPAN class="op">=</SPAN> base_type::filter<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">.</SPAN>diameter<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">int</SPAN>        start        <SPAN class="op">=</SPAN> base_type::filter<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">.</SPAN>start<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">const</SPAN> <A href="agg_basics.h.html#int16">int16</A><SPAN class="op">*</SPAN> weight_array <SPAN class="op">=</SPAN> base_type::filter<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">.</SPAN>weight_array<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+            <SPAN class="kw1">int</SPAN> x_count<SPAN class="op">;</SPAN> 
+            <SPAN class="kw1">int</SPAN> weight_y<SPAN class="op">;</SPAN>
+
+            <SPAN class="kw1">do</SPAN>
+            <SPAN class="op">{</SPAN>
+                intr<SPAN class="op">.</SPAN>coordinates<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>x<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>y<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+                x <SPAN class="op">-=</SPAN> base_type::filter_dx_int<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                y <SPAN class="op">-=</SPAN> base_type::filter_dy_int<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+                <SPAN class="kw1">int</SPAN> x_hr <SPAN class="op">=</SPAN> x<SPAN class="op">;</SPAN> 
+                <SPAN class="kw1">int</SPAN> y_hr <SPAN class="op">=</SPAN> y<SPAN class="op">;</SPAN> 
+
+                <SPAN class="kw1">int</SPAN> x_fract <SPAN class="op">=</SPAN> x_hr <SPAN class="op">&amp;</SPAN> <A href="agg_image_filters.h.html#image_subpixel_mask">image_subpixel_mask</A><SPAN class="op">;</SPAN>
+                <SPAN class="kw1">unsigned</SPAN> y_count <SPAN class="op">=</SPAN> diameter<SPAN class="op">;</SPAN>
+
+                <SPAN class="kw1">int</SPAN> y_lr  <SPAN class="op">=</SPAN> m_wrap_mode_y<SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>y <SPAN class="op">&gt;&gt;</SPAN> <A href="agg_image_filters.h.html#image_subpixel_shift">image_subpixel_shift</A><SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> start<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="kw1">int</SPAN> x_int <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>x <SPAN class="op">&gt;&gt;</SPAN> <A href="agg_image_filters.h.html#image_subpixel_shift">image_subpixel_shift</A><SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> start<SPAN class="op">;</SPAN>
+                <SPAN class="kw1">int</SPAN> x_lr<SPAN class="op">;</SPAN>
+
+                y_hr <SPAN class="op">=</SPAN> <A href="agg_image_filters.h.html#image_subpixel_mask">image_subpixel_mask</A> <SPAN class="op">-</SPAN> <SPAN class="op">(</SPAN>y_hr <SPAN class="op">&amp;</SPAN> <A href="agg_image_filters.h.html#image_subpixel_mask">image_subpixel_mask</A><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> fg<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> fg<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <A href="agg_image_filters.h.html#image_filter_size">image_filter_size</A> <SPAN class="op">/</SPAN> <SPAN class="num">2</SPAN><SPAN class="op">;</SPAN>
+
+                <SPAN class="kw1">do</SPAN>
+                <SPAN class="op">{</SPAN>
+                    x_count <SPAN class="op">=</SPAN> diameter<SPAN class="op">;</SPAN>
+                    weight_y <SPAN class="op">=</SPAN> weight_array<SPAN class="op">[</SPAN>y_hr<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                    x_hr <SPAN class="op">=</SPAN> <A href="agg_image_filters.h.html#image_subpixel_mask">image_subpixel_mask</A> <SPAN class="op">-</SPAN> x_fract<SPAN class="op">;</SPAN>
+                    x_lr <SPAN class="op">=</SPAN> m_wrap_mode_x<SPAN class="op">(</SPAN>x_int<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    <SPAN class="kw1">const</SPAN> value_type<SPAN class="op">*</SPAN> row_ptr <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> value_type<SPAN class="op">*</SPAN><SPAN class="op">)</SPAN>base_type::source_image<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">.</SPAN>row<SPAN class="op">(</SPAN>y_lr<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    <SPAN class="kw1">do</SPAN>
+                    <SPAN class="op">{</SPAN>
+                        <SPAN class="kw1">const</SPAN> value_type<SPAN class="op">*</SPAN> fg_ptr <SPAN class="op">=</SPAN> row_ptr <SPAN class="op">+</SPAN> x_lr <SPAN class="op">*</SPAN> <SPAN class="num">3</SPAN><SPAN class="op">;</SPAN>
+                        <SPAN class="kw1">int</SPAN> weight <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>weight_y <SPAN class="op">*</SPAN> weight_array<SPAN class="op">[</SPAN>x_hr<SPAN class="op">]</SPAN> <SPAN class="op">+</SPAN> 
+                                     <A href="agg_image_filters.h.html#image_filter_size">image_filter_size</A> <SPAN class="op">/</SPAN> <SPAN class="num">2</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> 
+                                     <A href="agg_image_filters.h.html#image_filter_shift">image_filter_shift</A><SPAN class="op">;</SPAN>
+        
+                        fg<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">*</SPAN> weight<SPAN class="op">;</SPAN>
+                        fg<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">*</SPAN> weight<SPAN class="op">;</SPAN>
+                        fg<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">+=</SPAN> fg_ptr<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">*</SPAN> weight<SPAN class="op">;</SPAN>
+
+                        x_hr <SPAN class="op">+=</SPAN> <A href="agg_image_filters.h.html#image_subpixel_size">image_subpixel_size</A><SPAN class="op">;</SPAN>
+                        x_lr <SPAN class="op">=</SPAN> <SPAN class="op">++</SPAN>m_wrap_mode_x<SPAN class="op">;</SPAN>
+                    <SPAN class="op">}</SPAN> <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN><SPAN class="op">--</SPAN>x_count<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+                    y_hr <SPAN class="op">+=</SPAN> <A href="agg_image_filters.h.html#image_subpixel_size">image_subpixel_size</A><SPAN class="op">;</SPAN>
+                    y_lr <SPAN class="op">=</SPAN> <SPAN class="op">++</SPAN>m_wrap_mode_y<SPAN class="op">;</SPAN>
+                <SPAN class="op">}</SPAN> <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN><SPAN class="op">--</SPAN>y_count<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+                fg<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">&gt;&gt;=</SPAN> <A href="agg_image_filters.h.html#image_filter_shift">image_filter_shift</A><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">&gt;&gt;=</SPAN> <A href="agg_image_filters.h.html#image_filter_shift">image_filter_shift</A><SPAN class="op">;</SPAN>
+                fg<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">&gt;&gt;=</SPAN> <A href="agg_image_filters.h.html#image_filter_shift">image_filter_shift</A><SPAN class="op">;</SPAN>
+
+                <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>fg<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">&lt;</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">)</SPAN> fg<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>fg<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">&lt;</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">)</SPAN> fg<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>fg<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">&lt;</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">)</SPAN> fg<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="num">0</SPAN><SPAN class="op">;</SPAN>
+
+                <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>fg<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">&gt;</SPAN> base_mask<SPAN class="op">)</SPAN> fg<SPAN class="op">[</SPAN><SPAN class="num">0</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> base_mask<SPAN class="op">;</SPAN>
+                <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>fg<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">&gt;</SPAN> base_mask<SPAN class="op">)</SPAN> fg<SPAN class="op">[</SPAN><SPAN class="num">1</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> base_mask<SPAN class="op">;</SPAN>
+                <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>fg<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">&gt;</SPAN> base_mask<SPAN class="op">)</SPAN> fg<SPAN class="op">[</SPAN><SPAN class="num">2</SPAN><SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> base_mask<SPAN class="op">;</SPAN>
+
+                span<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>r <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>value_type<SPAN class="op">)</SPAN>fg<SPAN class="op">[</SPAN>order_type::R<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                span<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>g <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>value_type<SPAN class="op">)</SPAN>fg<SPAN class="op">[</SPAN>order_type::G<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                span<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>b <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN>value_type<SPAN class="op">)</SPAN>fg<SPAN class="op">[</SPAN>order_type::B<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                span<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>a <SPAN class="op">=</SPAN> base_mask<SPAN class="op">;</SPAN>
+                <SPAN class="op">++</SPAN>span<SPAN class="op">;</SPAN>
+                <SPAN class="op">++</SPAN>intr<SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN> <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN><SPAN class="op">--</SPAN>len<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+            <SPAN class="kw1">return</SPAN> base_type::allocator<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">.</SPAN>span<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+    <SPAN class="kw1">private</SPAN>:
+        WrapModeX m_wrap_mode_x<SPAN class="op">;</SPAN>
+        WrapModeY m_wrap_mode_y<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+
+<SPAN class="op">}</SPAN>
+
+
+<SPAN class="kw2">#endif</SPAN>
+
+
+
+</PRE></TD></TR></TABLE><FONT style="margin-left:1em"><I></I></FONT><TABLE width="640px" bgcolor="#583927" height="1px" border="0" cellspacing="0" cellpadding="0" style="margin:0px;"><TR><TD></TD></TR></TABLE>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0">
+<TR><TD><CENTER><SPAN class="authors">
+Copyright <SPAN class="larger">&#169;</SPAN> 2002-2004
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+<TR><TD><CENTER><SPAN class="authors">
+Web Design and Programming
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+</TABLE>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+</HTML>

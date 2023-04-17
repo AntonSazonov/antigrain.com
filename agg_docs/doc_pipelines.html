@@ -1,0 +1,567 @@
+<HTML>
+ <HEAD>
+  <TITLE>Anti-Grain Geometry</TITLE>
+  <LINK href="../agg_styles.css" type="text/css" rel="stylesheet">
+ </HEAD>
+
+ <BODY bgColor="#ffffff">
+
+
+<table align="center" width="640px" border="0" cellpadding="0" cellspacing="0">
+ <tr>
+  <td align="left"><img src="../img/agg_logo.gif" alt="The Anti-Grain Geometry Project"></td>
+ </tr>
+</table>
+
+<table align="center" width="640px" border="0" cellpadding="0" cellspacing="0">
+ <tr>
+  <td bgcolor="#3399ff">
+   <table width="640" height="20px" border="0" cellspacing="0" cellpadding="0">
+    <tr align="left">
+     <td width="20px"><img src="../img/agg_icon.gif" border="0" align="left"></td>
+     <td align="left"><font color="#ffffff">
+       <a href="../"><font color="#ffffff"> Home</font></a>
+     | <a href="../agg_docs"><font color="#ffffff"> Table of Content</font></a>
+     | <a href="doxygen/index.html"> <font color="#ffffff"> Doxygen</font></a>
+     </font></td>
+    </tr>
+   </table>
+  </tr>
+ </td>
+</table>
+
+
+<!-- SUBTITLE -->
+<table align="center" width="640px" border="0" cellpadding="0" cellspacing="0" bgcolor="#ffffff">
+ <tr>
+  <td width="2px"   height="40px" bgcolor="#3399ff"></td>
+  <td width="636px" height="40px" align="center"><font class="st"> Conversion Pipeline Demonstration </font></td>
+  <td width="2px"   height="40px" bgcolor="#3399ff"></td>
+ </tr>
+</table>
+
+
+
+<!-- =================== -->
+<table align="center" width="640px" height="2px" border="0" cellspacing="0" cellpadding="0">
+ <tr>
+  <td bgcolor="#3399ff"></td>
+ </tr>
+</table>
+<!-- =================== -->
+
+
+<!-- ************************ -->
+<table align="center" width="640px" height="10px" border="0" cellspacing="0" cellpadding="0">
+ <tr>
+  <td width="2px" bgcolor="#3399ff"></td><td width="10px"></td>
+  <td>
+
+   <br>
+
+
+   <p align="justify">
+   This is a simple demonstration of AGG conversion pipelines with examples of code. 
+   Assume we have a rendering buffer like this:
+   </p>
+   <pre>
+agg::render_buffer buf;
+buf.attach(pmap.get_buf(), 
+           pmap.get_width(), 
+           pmap.get_height(), 
+           pmap.get_row_bytes());
+
+agg::render_bgr24_solid r(&buf);
+r.clear(agg::rgba8(255, 255, 255));
+r.set_attribute(agg::rgba8(0, 0, 0));
+
+agg::polyfill pf;
+   </pre>
+   <p align="justify">
+   Here <b>pmap</b> is some class that povides memory for rendering (Windows programmers 
+   can use <b>agg::pixel_map</b>).
+   </p>
+   <hr color="#3399ff">
+   <p align="justify">
+   We start with creating a very simple class that supports the Vertex Source interface:
+   </p>
+   <pre>
+class simplest_vertex_source
+{
+    unsigned nv;
+public:
+    void reset_iterator(unsigned)
+    {
+        nv = 0;
+    }
+
+    agg::pathflag_e next_vertex(double* x, double* y)
+    {
+        nv++;
+        switch(nv)
+        {
+        case 1: *x = 100; *y = 100; return agg::pathflag_move_to;
+        case 2: *x = 120; *y = 200; return agg::pathflag_line_to;
+        case 3: *x = 180; *y = 200; return agg::pathflag_line_to;
+        case 4: *x = 200; *y = 100; return agg::pathflag_line_to;
+        }
+        return agg::pathflag_stop;
+    }
+};
+   </pre>
+   <p align="justify">
+   This class returns four hardcoded points with coordinates (100,100), 
+   (120,200), (180,200), and (200,100) when its function <b>next_vertex()</b> is being called. 
+   On the fifth call the function returns <b>pathflag_stop</b>. We will use it for 
+   our experimetns with pipelines. 
+   </p>
+   <hr color="#3399ff">
+
+
+   <p align="justify">
+   The simplest pipeline is null-pipeline. We just use our class as a vertex source 
+   to render the polygon:
+   </p>
+<img src="../img/pipeline00.gif" align="right">
+<pre>
+// Simplest vertex source. 
+// Gives 4 vertices with hardcoded coordinates
+simplest_vertex_source src;
+agg::make_polygon(&pf, &src, 0);
+agg::render_polygon(&r, &pf);
+
+
+
+</pre>
+
+
+   <hr color="#3399ff">
+   <p align="justify">
+   Then we use conv_polygon to calculate additional 4 points and to draw an outline 
+   with thickness of 3 pixels:
+   </p>
+<img src="../img/pipeline01.gif" align="right">
+<pre>
+// Making polygonal outline from the vertex source
+simplest_vertex_source src;
+agg::conv_polygon< simplest_vertex_source > pgon(&src);
+pgon.set_thickness(3.0);
+agg::make_polygon(&pf, &pgon, 0);
+agg::render_polygon(&r, &pf);
+
+
+</pre>
+
+
+   <hr color="#3399ff">
+   <p align="justify">
+   What is the difference between conv_polygon and conv_polyline? Compare 
+   the following code with the previous example and the result of it:
+   </p>
+<img src="../img/pipeline02.gif" align="right">
+<pre>
+// Making a polyline from the vertex source
+simplest_vertex_source src;
+agg::conv_polyline< simplest_vertex_source > pline(&src);
+pline.set_thickness(3.0);
+agg::make_polygon(&pf, &pline, 0);
+agg::render_polygon(&r, &pf);
+
+
+</pre>
+
+
+   <hr color="#3399ff">
+   <p align="justify">
+   Now we will copy/paste our class simplest_vertex_source and modify it:
+   </p>
+<pre>
+class bcurve_vertex_source
+{
+    unsigned nv;
+public:
+    void reset_iterator(unsigned)
+    {
+        nv = 0;
+    }
+
+    agg::pathflag_e next_vertex(double* x, double* y)
+    {
+        nv++;
+        switch(nv)
+        {
+        case 1: *x = 100; *y = 100; return agg::pathflag_move_to;
+        case 2: *x = 120; *y = 200; return agg::pathflag_curve4;
+        case 3: *x = 180; *y = 200; return agg::pathflag_curve4;
+        case 4: *x = 200; *y = 100; return agg::pathflag_curve4;
+        }
+        return agg::pathflag_stop;
+    }
+};
+</pre>
+   <p align="justify">
+   The only difference here is returning value <b>pathflag_curve4</b> instead of 
+   <b>pathflag_move_to</b>. Now we simply use this class as in the first example:
+   </p>
+<img src="../img/pipeline03.gif" align="right">
+<pre>
+// Simplest vertex source with Bezier curve flags
+bcurve_vertex_source src;
+agg::make_polygon(&pf, &src, 0);
+agg::render_polygon(&r, &pf);
+
+
+
+
+</pre>
+   <p align="justify">
+   Since we return some kind of <b>curve</b> flags we could expect our figure to be 
+   also curved. But why it isn't?
+   </p>
+
+
+   <hr color="#3399ff">
+   <p align="justify">
+   It's because we should use conv_curve to calculate a number of actual curve points:
+   </p>
+<img src="../img/pipeline04.gif" align="right">
+<pre>
+// Simplest vertex source with Bezier curve flags
+// and curve converter
+bcurve_vertex_source src;
+agg::conv_curve< bcurve_vertex_source > curve(&src);
+agg::make_polygon(&pf, &curve, 0);
+agg::render_polygon(&r, &pf);
+</pre>
+   <p align="justify">
+   So, we have a Vertex Source that returns <b>pathflag_curve4</b> and 
+   we also use some <b>conv_curve</b> converter.
+   Looks like some extra comexity. Why not to use a simple curve
+   converter embedded into the polyfill? The only reason is to avoid 
+   overhead. If you don't need curves at all, you don't link their code and you
+   remove extra "if-else" logic. If you do you simply include the appropriate
+   converters into your pipeline. And this idea is the general approach in AGG:
+   Using a number of independent parts that you can combine as you wish.
+   </p>
+
+
+   <hr color="#3399ff">
+   <p align="justify">
+   Polygon outline.
+   </p>
+<img src="../img/pipeline05.gif" align="right">
+<pre>
+// Simplest vertex source with Bezier curve flags,
+// curve converter, and polygonal outline converter
+bcurve_vertex_source src;
+agg::conv_curve< bcurve_vertex_source > curve(&src);
+agg::conv_polygon< 
+    agg::conv_curve< bcurve_vertex_source > 
+> pgon(&curve);
+pgon.set_thickness(3.0);
+agg::make_polygon(&pf, &pgon, 0);
+agg::render_polygon(&r, &pf);
+</pre>
+
+
+   <hr color="#3399ff">
+   <p align="justify">
+   And polyline outline.
+   </p>
+<img src="../img/pipeline06.gif" align="right">
+<pre>
+// Simplest vertex source with Bezier curve flags,
+// curve converter, and polyline converter
+bcurve_vertex_source src;
+agg::conv_curve< bcurve_vertex_source > curve(&src);
+agg::conv_polyline< 
+    agg::conv_curve< bcurve_vertex_source > 
+> pline(&curve);
+pline.set_thickness(3.0);
+agg::make_polygon(&pf, &pline, 0);
+agg::render_polygon(&r, &pf);
+</pre>
+
+
+   <hr color="#3399ff">
+   <p align="justify">
+   Now we return to our class <b>simplest_vertex_source</b> and try to pass it through
+   the <b>conv_smooth_polygon</b> converter. This converter is supposed to be used 
+   for <a href="../agg_research/bezier_interpolation.html">spline-like 
+   interpolation of poligons.</a> 
+   </p>
+<pre>
+// Polygon smoothing converter (naked)
+simplest_vertex_source src;
+agg::conv_smooth_polygon< simplest_vertex_source > pgon(&src);
+pgon.set_smooth_value(0.5);
+agg::make_polygon(&pf, &pgon, 0);
+agg::render_polygon(&r, &pf);
+</pre>
+   <p align="center"><img src="../img/pipeline07.gif"></p>
+   <p align="justify">
+   The left figure is what we will see, the right one is the explanation. 
+   <b>conv_smooth_polygon</b> generates 8 control points for cubic Bezier curves.
+   From the previous examples we know how to obtain a curved polygon.
+   </p>
+
+
+   <hr color="#3399ff">
+   <p align="justify">
+   </p>
+<img src="../img/pipeline08.gif" align="right">
+<pre>
+// Polygon smoothing converter and curve converter
+simplest_vertex_source src;
+agg::conv_smooth_polygon< simplest_vertex_source > pgon(&src);
+pgon.set_smooth_value(0.5);
+
+agg::conv_curve < 
+    agg::conv_smooth_polygon< simplest_vertex_source > 
+> curve(&pgon);
+
+agg::make_polygon(&pf, &curve, 0);
+agg::render_polygon(&r, &pf);
+</pre>
+
+
+   <hr color="#3399ff">
+   <p align="justify">
+   </p>
+<img src="../img/pipeline09.gif" align="right">
+<pre>
+// Polygon smoothing converter, curve converter, and
+// polygonal outline converter
+simplest_vertex_source src;
+agg::conv_smooth_polygon< simplest_vertex_source > pgon(&src);
+pgon.set_smooth_value(0.5);
+
+agg::conv_curve<
+    agg::conv_smooth_polygon< simplest_vertex_source > 
+> curve(&pgon);
+
+agg::conv_polygon<
+    agg::conv_curve<
+        agg::conv_smooth_polygon< simplest_vertex_source > 
+    > 
+> pgon2(&curve);
+
+pgon2.set_thickness(3.0);
+agg::make_polygon(&pf, &pgon2, 0);
+agg::render_polygon(&r, &pf);
+</pre>
+
+
+
+   <hr color="#3399ff">
+   <p align="justify">
+   </p>
+<pre>
+// Polygon smoothing converter, curve converter, and
+// polyline converter (wrong result)
+simplest_vertex_source src;
+agg::conv_smooth_polygon< simplest_vertex_source > pgon(&src);
+pgon.set_smooth_value(0.5);
+
+agg::conv_curve<
+    agg::conv_smooth_polygon< simplest_vertex_source > 
+> curve(&pgon);
+
+agg::conv_polyline<
+    agg::conv_curve<
+        agg::conv_smooth_polygon< simplest_vertex_source > 
+    > 
+> pline2(&curve);
+
+pline2.set_thickness(3.0);
+agg::make_polygon(&pf, &pline2, 0);
+agg::render_polygon(&r, &pf);
+</pre>
+   <p align="center"><img src="../img/pipeline10.gif"></p>
+   <p align="justify">
+   This example requires some explanations. We used <b>conv_polyline</b> but there a polygon
+   is drawn. The problem is that <b>conv_smooth_polygon</b> and then <b>conv_curve</b> 
+   close our polyline, i.e. it interprets our Vertex Source as a closed figure. Two square 
+   caps of our polyline result in a small defect marked with a circle.
+   </p>
+
+
+
+   <hr color="#3399ff">
+   <p align="justify">
+   If we replace <b>conv_smooth_polygon</b> to <b>conv_smooth_polyline</b> we will see
+   what we expected. 
+   </p>
+<pre>
+// Polyline smoothing converter, curve converter, and
+// polyline converter (expected result)
+simplest_vertex_source src;
+agg::conv_smooth_polyline< simplest_vertex_source > pline(&src);
+pline.set_smooth_value(0.5);
+
+agg::conv_curve<
+    agg::conv_smooth_polyline< simplest_vertex_source > 
+> curve(&pline);
+
+agg::conv_polyline<
+    agg::conv_curve<
+        agg::conv_smooth_polyline< simplest_vertex_source > 
+    > 
+> pline2(&curve);
+
+pline2.set_thickness(3.0);
+agg::make_polygon(&pf, &pline2, 0);
+agg::render_polygon(&r, &pf);
+</pre>
+   <p align="center"><img src="../img/pipeline11.gif"></p>
+   <p align="justify">
+   Besides, <b>conv_smooth_polyline</b> generates quadric Bezier 
+   curves (with one control point) for the first and the last segments because our figure 
+   is not supposed to be closed. Otherways it would look not very natural, like the right one.
+   </p>
+
+
+
+   <hr color="#3399ff">
+   <p align="justify">
+   The following example demonstrates how to use a transformation converter 
+   (<b>conv_transform</b>). Class <b>conv_transform</b> has two template 
+   arguments. The first one is, as usual, Vertex Source, the second is a transformation 
+   class that must support the only method <b>transform(x, y)</b>. Most probably you
+   will use affine transformations (<b>affine_matrix</b>), but you also can create your own 
+   transformer, for example, some non-linear one.
+   </p>
+<pre>
+// Polyline smoothing converter, curve converter,
+// polyline converter, affine transformations converter
+simplest_vertex_source src;
+agg::conv_smooth_polyline< simplest_vertex_source > pline(&src);
+pline.set_smooth_value(0.5);
+
+agg::conv_curve<
+    agg::conv_smooth_polyline< simplest_vertex_source > 
+> curve(&pline);
+
+agg::conv_polyline<
+    agg::conv_curve<
+        agg::conv_smooth_polyline< simplest_vertex_source > 
+    > 
+> pline2(&curve);
+
+agg::affine_matrix mtx;
+mtx *= agg::translation_matrix(-150.0, -150.0);
+mtx *= agg::scaling_matrix(1.8, 1.8);
+mtx *= agg::rotation_matrix(35.0 * 180.0 / agg::pi);
+mtx *= agg::translation_matrix(150.0, 150.0);
+
+agg::conv_transform<
+    agg::conv_polyline<
+        agg::conv_curve<
+            agg::conv_smooth_polyline< simplest_vertex_source > 
+        > 
+    >,
+    agg::affine_matrix
+> trans(&pline2, &mtx);
+
+pline2.set_thickness(3.0);
+agg::make_polygon(&pf, &trans, 0);
+agg::render_polygon(&r, &pf);
+</pre>
+   <p align="center"><img src="../img/pipeline12.gif"></p>
+
+
+
+   <hr color="#3399ff">
+   Below there are some more examples of using existing classes of AGG, such as <b>curve4</b> 
+   and <b>path_storage</b>
+   <p align="justify">
+   </p>
+<img src="../img/pipeline13.gif" align="right">
+<pre>
+// Curve generator as a vertex source
+agg::curve4 curve;
+curve.init(100, 100, 120, 200, 180, 200, 200, 100);
+agg::make_polygon(&pf, &curve, 0);
+agg::render_polygon(&r, &pf);
+
+</pre>
+
+
+   <hr color="#3399ff">
+   <p align="justify">
+   </p>
+<img src="../img/pipeline14.gif" align="right">
+<pre>
+// Path storage with curves but without converters
+agg::path_storage path;
+path.move_to(100, 100);
+path.curve4(120, 200, 180, 200, 200, 100);
+agg::make_polygon(&pf, &path, 0);
+agg::render_polygon(&r, &pf);
+
+
+</pre>
+
+
+
+   <hr color="#3399ff">
+   <p align="justify">
+   </p>
+<img src="../img/pipeline15.gif" align="right">
+<pre>
+// Path storage with curves and curve converter
+agg::path_storage path;
+path.move_to(100, 100);
+path.curve4(120, 200, 180, 200, 200, 100);
+agg::conv_curve< agg::path_storage > curve(&path);
+agg::make_polygon(&pf, &curve, 0);
+agg::render_polygon(&r, &pf);
+</pre>
+
+   <hr color="#3399ff">
+   <p align="justify">
+   Full source code of this example and a project for MS Visual C++ 6.0 is available 
+   <a href="../agg_downloads/07_pipeline.zip">here</a>.
+   <br><br><br>
+   </p>
+
+
+  </td>
+  <td width="10px"></td><td width="2px" bgcolor="#3399ff"></td>
+ </tr>
+</table>
+<!-- ************************ -->
+
+
+<!-- =================== -->
+<table align="center" width="640px" height="2px" border="0" cellspacing="0" cellpadding="0">
+ <tr>
+  <td bgcolor="#3399ff"></td>
+ </tr>
+</table>
+<!-- =================== -->
+
+
+
+
+<table align="center" width="640px" border="0" cellpadding="0" cellspacing="0" bgcolor="#ffffff">
+ <tr>
+  <td width="2px" bgcolor="#3399ff"></td>
+  <td width="636px" align="center">
+   <font class="cr">
+    Copyright &copy; 2002 <a href="mailto:mcseem@antigrain.com">Maxim Shemanarev</a> (McSeem)
+   </font>
+  </td>
+  <td width="2px" bgcolor="#3399ff"></td>
+ </tr>
+</table>
+
+<table align="center" width="640px" height="2px" border="0" cellspacing="0" cellpadding="0">
+ <tr>
+  <td bgcolor="#3399ff"></td>
+ </tr>
+</table>
+
+
+ </BODY>
+</HTML>

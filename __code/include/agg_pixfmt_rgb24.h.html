@@ -1,0 +1,383 @@
+<HTML><HEAD><TITLE>Anti-Grain Geometry - </TITLE>
+<META http-equiv="Content-Type" content="text/html"/>
+<LINK rel="stylesheet" type="text/css" href="../../agg.styles.css"/>
+</HEAD>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0"><TR><TD><PRE><SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Anti-Grain Geometry - Version 2.2</SPAN>
+<SPAN class="rem">// Copyright (C) 2002-2004 Maxim Shemanarev (http://www.antigrain.com)</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// Permission to copy, use, modify, sell and distribute this software </SPAN>
+<SPAN class="rem">// is granted provided this copyright notice appears in all copies. </SPAN>
+<SPAN class="rem">// This software is provided &quot;as is&quot; without express or implied</SPAN>
+<SPAN class="rem">// warranty, and with no claim as to its suitability for any purpose.</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Contact: mcseem@antigrain.com</SPAN>
+<SPAN class="rem">//          mcseemagg@yahoo.com</SPAN>
+<SPAN class="rem">//          http://www.antigrain.com</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+
+<SPAN class="kw2">#ifndef</SPAN> AGG_PIXFMT_RGB24_INCLUDED
+<SPAN class="kw2">#define</SPAN> AGG_PIXFMT_RGB24_INCLUDED
+
+<SPAN class="kw2">#include</SPAN> <SPAN class="op">&lt;</SPAN>string<SPAN class="op">.</SPAN>h<SPAN class="op">&gt;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="agg_basics.h.html">agg_basics.h</A>&quot;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="agg_color_rgba8.h.html">agg_color_rgba8.h</A>&quot;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="agg_rendering_buffer.h.html">agg_rendering_buffer.h</A>&quot;</SPAN>
+
+<SPAN class="kw1">namespace</SPAN> agg
+<SPAN class="op">{</SPAN>
+    
+    <SPAN class="rem">//=====================================================<A name="pixel_formats_rgb24"><B></B></A><A href="agg_pixfmt_rgb24.h.html#pixel_formats_rgb24">pixel_formats_rgb24</A></SPAN>
+    <SPAN class="kw1">template</SPAN><SPAN class="op">&lt;</SPAN><SPAN class="kw1">class</SPAN> Order<SPAN class="op">&gt;</SPAN> <SPAN class="kw1">class</SPAN> <A href="agg_pixfmt_rgb24.h.html#pixel_formats_rgb24">pixel_formats_rgb24</A>
+    <SPAN class="op">{</SPAN>
+    <SPAN class="kw1">public</SPAN>:
+        <SPAN class="kw1">typedef</SPAN> <A href="agg_color_rgba8.h.html#rgba8">rgba8</A> color_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> Order order_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> rendering_buffer::row_data row_data<SPAN class="op">;</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <A href="agg_pixfmt_rgb24.h.html#pixel_formats_rgb24">pixel_formats_rgb24</A><SPAN class="op">(</SPAN><A href="../../doc/basic_renderers/basic_renderers.agdoc.html#rendering_buffer">rendering_buffer</A><SPAN class="op">&amp;</SPAN> rb<SPAN class="op">)</SPAN>
+            : m_rbuf<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>rb<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> width<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN>  <SPAN class="kw1">const</SPAN> <SPAN class="op">{</SPAN> <SPAN class="kw1">return</SPAN> m_rbuf<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>width<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>  <SPAN class="op">}</SPAN>
+        <SPAN class="kw1">unsigned</SPAN> height<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="op">{</SPAN> <SPAN class="kw1">return</SPAN> m_rbuf<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>height<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        color_type pixel<SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">int</SPAN> y<SPAN class="op">)</SPAN> <SPAN class="kw1">const</SPAN>
+        <SPAN class="op">{</SPAN>
+            <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">*</SPAN> p <SPAN class="op">=</SPAN> m_rbuf<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>row<SPAN class="op">(</SPAN>y<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> color_type<SPAN class="op">(</SPAN>p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN><SPAN class="op">,</SPAN> p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN><SPAN class="op">,</SPAN> p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        row_data span<SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">int</SPAN> y<SPAN class="op">)</SPAN> <SPAN class="kw1">const</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">return</SPAN> row_data<SPAN class="op">(</SPAN>x<SPAN class="op">,</SPAN> width<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">-</SPAN> <SPAN class="num">1</SPAN><SPAN class="op">,</SPAN> m_rbuf<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>row<SPAN class="op">(</SPAN>y<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> x <SPAN class="op">*</SPAN> <SPAN class="num">3</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">void</SPAN> copy_pixel<SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">int</SPAN> y<SPAN class="op">,</SPAN> <SPAN class="kw1">const</SPAN> color_type<SPAN class="op">&amp;</SPAN> c<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">*</SPAN> p <SPAN class="op">=</SPAN> m_rbuf<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>row<SPAN class="op">(</SPAN>y<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x<SPAN class="op">;</SPAN>
+            p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>r<SPAN class="op">;</SPAN>
+            p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>g<SPAN class="op">;</SPAN>
+            p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>b<SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">void</SPAN> blend_pixel<SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">int</SPAN> y<SPAN class="op">,</SPAN> <SPAN class="kw1">const</SPAN> color_type<SPAN class="op">&amp;</SPAN> c<SPAN class="op">,</SPAN> <A href="agg_basics.h.html#int8u">int8u</A> cover<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">*</SPAN> p <SPAN class="op">=</SPAN> m_rbuf<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>row<SPAN class="op">(</SPAN>y<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">int</SPAN> alpha <SPAN class="op">=</SPAN> <SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN>cover<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> c<SPAN class="op">.</SPAN>a<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>alpha <SPAN class="op">==</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">*</SPAN><SPAN class="num">255</SPAN><SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>r<SPAN class="op">;</SPAN>
+                p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>g<SPAN class="op">;</SPAN>
+                p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>b<SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <SPAN class="kw1">else</SPAN>
+            <SPAN class="op">{</SPAN>
+                <SPAN class="kw1">int</SPAN> r <SPAN class="op">=</SPAN> p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="kw1">int</SPAN> g <SPAN class="op">=</SPAN> p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="kw1">int</SPAN> b <SPAN class="op">=</SPAN> p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>r <SPAN class="op">-</SPAN> r<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> alpha<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>r <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>g <SPAN class="op">-</SPAN> g<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> alpha<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>g <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>b <SPAN class="op">-</SPAN> b<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> alpha<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>b <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+        <SPAN class="op">}</SPAN>
+
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">void</SPAN> copy_hline<SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">int</SPAN> y<SPAN class="op">,</SPAN> 
+                        <SPAN class="kw1">unsigned</SPAN> len<SPAN class="op">,</SPAN> 
+                        <SPAN class="kw1">const</SPAN> color_type<SPAN class="op">&amp;</SPAN> c<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">*</SPAN> p <SPAN class="op">=</SPAN> m_rbuf<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>row<SPAN class="op">(</SPAN>y<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">do</SPAN>
+            <SPAN class="op">{</SPAN>
+                p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>r<SPAN class="op">;</SPAN> 
+                p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>g<SPAN class="op">;</SPAN> 
+                p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>b<SPAN class="op">;</SPAN>
+                p <SPAN class="op">+=</SPAN> <SPAN class="num">3</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN><SPAN class="op">--</SPAN>len<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">void</SPAN> copy_vline<SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">int</SPAN> y<SPAN class="op">,</SPAN>
+                        <SPAN class="kw1">unsigned</SPAN> len<SPAN class="op">,</SPAN> 
+                        <SPAN class="kw1">const</SPAN> color_type<SPAN class="op">&amp;</SPAN> c<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">*</SPAN> p <SPAN class="op">=</SPAN> m_rbuf<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>row<SPAN class="op">(</SPAN>y<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">do</SPAN>
+            <SPAN class="op">{</SPAN>
+                p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>r<SPAN class="op">;</SPAN> 
+                p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>g<SPAN class="op">;</SPAN> 
+                p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>b<SPAN class="op">;</SPAN>
+                p <SPAN class="op">+=</SPAN> m_rbuf<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>stride<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN><SPAN class="op">--</SPAN>len<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">void</SPAN> blend_hline<SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">int</SPAN> y<SPAN class="op">,</SPAN>
+                         <SPAN class="kw1">unsigned</SPAN> len<SPAN class="op">,</SPAN> 
+                         <SPAN class="kw1">const</SPAN> color_type<SPAN class="op">&amp;</SPAN> c<SPAN class="op">,</SPAN>
+                         <A href="agg_basics.h.html#int8u">int8u</A> cover<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">*</SPAN> p <SPAN class="op">=</SPAN> m_rbuf<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>row<SPAN class="op">(</SPAN>y<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">int</SPAN> alpha <SPAN class="op">=</SPAN> <SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN>cover<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> c<SPAN class="op">.</SPAN>a<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>alpha <SPAN class="op">==</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">*</SPAN><SPAN class="num">255</SPAN><SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                <SPAN class="kw1">do</SPAN>
+                <SPAN class="op">{</SPAN>
+                    p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>r<SPAN class="op">;</SPAN> 
+                    p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>g<SPAN class="op">;</SPAN> 
+                    p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>b<SPAN class="op">;</SPAN>
+                    p <SPAN class="op">+=</SPAN> <SPAN class="num">3</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="op">}</SPAN>
+                <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN><SPAN class="op">--</SPAN>len<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <SPAN class="kw1">else</SPAN>
+            <SPAN class="op">{</SPAN>
+                <SPAN class="kw1">do</SPAN>
+                <SPAN class="op">{</SPAN>
+                    <SPAN class="kw1">int</SPAN> r <SPAN class="op">=</SPAN> p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                    <SPAN class="kw1">int</SPAN> g <SPAN class="op">=</SPAN> p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                    <SPAN class="kw1">int</SPAN> b <SPAN class="op">=</SPAN> p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                    p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>r <SPAN class="op">-</SPAN> r<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> alpha<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>r <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>g <SPAN class="op">-</SPAN> g<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> alpha<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>g <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>b <SPAN class="op">-</SPAN> b<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> alpha<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>b <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    p <SPAN class="op">+=</SPAN> <SPAN class="num">3</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="op">}</SPAN>
+                <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN><SPAN class="op">--</SPAN>len<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+        <SPAN class="op">}</SPAN>
+
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">void</SPAN> blend_vline<SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">int</SPAN> y<SPAN class="op">,</SPAN>
+                         <SPAN class="kw1">unsigned</SPAN> len<SPAN class="op">,</SPAN> 
+                         <SPAN class="kw1">const</SPAN> color_type<SPAN class="op">&amp;</SPAN> c<SPAN class="op">,</SPAN>
+                         <A href="agg_basics.h.html#int8u">int8u</A> cover<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">*</SPAN> p <SPAN class="op">=</SPAN> m_rbuf<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>row<SPAN class="op">(</SPAN>y<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">int</SPAN> alpha <SPAN class="op">=</SPAN> <SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN>cover<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> c<SPAN class="op">.</SPAN>a<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>alpha <SPAN class="op">==</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">*</SPAN><SPAN class="num">255</SPAN><SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                <SPAN class="kw1">do</SPAN>
+                <SPAN class="op">{</SPAN>
+                    p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>r<SPAN class="op">;</SPAN> 
+                    p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>g<SPAN class="op">;</SPAN> 
+                    p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>b<SPAN class="op">;</SPAN>
+                    p <SPAN class="op">+=</SPAN> m_rbuf<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>stride<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="op">}</SPAN>
+                <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN><SPAN class="op">--</SPAN>len<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <SPAN class="kw1">else</SPAN>
+            <SPAN class="op">{</SPAN>
+                <SPAN class="kw1">do</SPAN>
+                <SPAN class="op">{</SPAN>
+                    <SPAN class="kw1">int</SPAN> r <SPAN class="op">=</SPAN> p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                    <SPAN class="kw1">int</SPAN> g <SPAN class="op">=</SPAN> p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                    <SPAN class="kw1">int</SPAN> b <SPAN class="op">=</SPAN> p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                    p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>r <SPAN class="op">-</SPAN> r<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> alpha<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>r <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>g <SPAN class="op">-</SPAN> g<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> alpha<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>g <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>b <SPAN class="op">-</SPAN> b<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> alpha<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>b <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    p <SPAN class="op">+=</SPAN> m_rbuf<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>stride<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="op">}</SPAN>
+                <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN><SPAN class="op">--</SPAN>len<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+        <SPAN class="op">}</SPAN>
+
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">void</SPAN> copy_from<SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <A href="../../doc/basic_renderers/basic_renderers.agdoc.html#rendering_buffer">rendering_buffer</A><SPAN class="op">&amp;</SPAN> from<SPAN class="op">,</SPAN> 
+                       <SPAN class="kw1">int</SPAN> xdst<SPAN class="op">,</SPAN> <SPAN class="kw1">int</SPAN> ydst<SPAN class="op">,</SPAN>
+                       <SPAN class="kw1">int</SPAN> xsrc<SPAN class="op">,</SPAN> <SPAN class="kw1">int</SPAN> ysrc<SPAN class="op">,</SPAN>
+                       <SPAN class="kw1">unsigned</SPAN> len<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            memmove<SPAN class="op">(</SPAN>m_rbuf<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>row<SPAN class="op">(</SPAN>ydst<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> xdst <SPAN class="op">*</SPAN> <SPAN class="num">3</SPAN><SPAN class="op">,</SPAN> 
+                    <SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <SPAN class="kw1">void</SPAN><SPAN class="op">*</SPAN><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN>from<SPAN class="op">.</SPAN>row<SPAN class="op">(</SPAN>ysrc<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> xsrc <SPAN class="op">*</SPAN> <SPAN class="num">3</SPAN><SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> len <SPAN class="op">*</SPAN> <SPAN class="num">3</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">void</SPAN> blend_solid_hspan<SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">int</SPAN> y<SPAN class="op">,</SPAN>
+                               <SPAN class="kw1">unsigned</SPAN> len<SPAN class="op">,</SPAN> 
+                               <SPAN class="kw1">const</SPAN> color_type<SPAN class="op">&amp;</SPAN> c<SPAN class="op">,</SPAN>
+                               <SPAN class="kw1">const</SPAN> <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">*</SPAN> covers<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">*</SPAN> p <SPAN class="op">=</SPAN> m_rbuf<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>row<SPAN class="op">(</SPAN>y<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">do</SPAN> 
+            <SPAN class="op">{</SPAN>
+                <SPAN class="kw1">int</SPAN> alpha <SPAN class="op">=</SPAN> <SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN><SPAN class="op">*</SPAN>covers<SPAN class="op">++</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> c<SPAN class="op">.</SPAN>a<SPAN class="op">;</SPAN>
+
+                <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>alpha<SPAN class="op">)</SPAN>
+                <SPAN class="op">{</SPAN>
+                    <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>alpha <SPAN class="op">==</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">*</SPAN><SPAN class="num">255</SPAN><SPAN class="op">)</SPAN>
+                    <SPAN class="op">{</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>r<SPAN class="op">;</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>g<SPAN class="op">;</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>b<SPAN class="op">;</SPAN>
+                    <SPAN class="op">}</SPAN>
+                    <SPAN class="kw1">else</SPAN>
+                    <SPAN class="op">{</SPAN>
+                        <SPAN class="kw1">int</SPAN> r <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                        <SPAN class="kw1">int</SPAN> g <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                        <SPAN class="kw1">int</SPAN> b <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>r <SPAN class="op">-</SPAN> r<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> alpha<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>r <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>g <SPAN class="op">-</SPAN> g<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> alpha<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>g <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>b <SPAN class="op">-</SPAN> b<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> alpha<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>b <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    <SPAN class="op">}</SPAN>
+                <SPAN class="op">}</SPAN>
+                p <SPAN class="op">+=</SPAN> <SPAN class="num">3</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN><SPAN class="op">--</SPAN>len<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">void</SPAN> blend_solid_vspan<SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">int</SPAN> y<SPAN class="op">,</SPAN>
+                               <SPAN class="kw1">unsigned</SPAN> len<SPAN class="op">,</SPAN> 
+                               <SPAN class="kw1">const</SPAN> color_type<SPAN class="op">&amp;</SPAN> c<SPAN class="op">,</SPAN>
+                               <SPAN class="kw1">const</SPAN> <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">*</SPAN> covers<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">*</SPAN> p <SPAN class="op">=</SPAN> m_rbuf<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>row<SPAN class="op">(</SPAN>y<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">do</SPAN> 
+            <SPAN class="op">{</SPAN>
+                <SPAN class="kw1">int</SPAN> alpha <SPAN class="op">=</SPAN> <SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN><SPAN class="op">*</SPAN>covers<SPAN class="op">++</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> c<SPAN class="op">.</SPAN>a<SPAN class="op">;</SPAN>
+
+                <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>alpha<SPAN class="op">)</SPAN>
+                <SPAN class="op">{</SPAN>
+                    <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>alpha <SPAN class="op">==</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">*</SPAN><SPAN class="num">255</SPAN><SPAN class="op">)</SPAN>
+                    <SPAN class="op">{</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>r<SPAN class="op">;</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>g<SPAN class="op">;</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>c<SPAN class="op">.</SPAN>b<SPAN class="op">;</SPAN>
+                    <SPAN class="op">}</SPAN>
+                    <SPAN class="kw1">else</SPAN>
+                    <SPAN class="op">{</SPAN>
+                        <SPAN class="kw1">int</SPAN> r <SPAN class="op">=</SPAN> p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                        <SPAN class="kw1">int</SPAN> g <SPAN class="op">=</SPAN> p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                        <SPAN class="kw1">int</SPAN> b <SPAN class="op">=</SPAN> p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>r <SPAN class="op">-</SPAN> r<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> alpha<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>r <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>g <SPAN class="op">-</SPAN> g<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> alpha<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>g <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>c<SPAN class="op">.</SPAN>b <SPAN class="op">-</SPAN> b<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> alpha<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>b <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    <SPAN class="op">}</SPAN>
+                <SPAN class="op">}</SPAN>
+                p <SPAN class="op">+=</SPAN> m_rbuf<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>stride<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN><SPAN class="op">--</SPAN>len<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">void</SPAN> blend_color_hspan<SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">int</SPAN> y<SPAN class="op">,</SPAN>
+                               <SPAN class="kw1">unsigned</SPAN> len<SPAN class="op">,</SPAN> 
+                               <SPAN class="kw1">const</SPAN> color_type<SPAN class="op">*</SPAN> colors<SPAN class="op">,</SPAN>
+                               <SPAN class="kw1">const</SPAN> <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">*</SPAN> covers<SPAN class="op">,</SPAN>
+                               <SPAN class="kw1">const</SPAN> <A href="agg_basics.h.html#int8u">int8u</A> cover<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">*</SPAN> p <SPAN class="op">=</SPAN> m_rbuf<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>row<SPAN class="op">(</SPAN>y<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">do</SPAN> 
+            <SPAN class="op">{</SPAN>
+                <SPAN class="kw1">int</SPAN> alpha <SPAN class="op">=</SPAN> colors<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>a <SPAN class="op">*</SPAN> <SPAN class="op">(</SPAN>covers ? <SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN><SPAN class="op">*</SPAN>covers<SPAN class="op">++</SPAN><SPAN class="op">)</SPAN> : <SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN>cover<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+                <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>alpha<SPAN class="op">)</SPAN>
+                <SPAN class="op">{</SPAN>
+                    <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>alpha <SPAN class="op">==</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">*</SPAN><SPAN class="num">255</SPAN><SPAN class="op">)</SPAN>
+                    <SPAN class="op">{</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>colors<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>r<SPAN class="op">;</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>colors<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>g<SPAN class="op">;</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>colors<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>b<SPAN class="op">;</SPAN>
+                    <SPAN class="op">}</SPAN>
+                    <SPAN class="kw1">else</SPAN>
+                    <SPAN class="op">{</SPAN>
+                        <SPAN class="kw1">int</SPAN> r <SPAN class="op">=</SPAN> p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                        <SPAN class="kw1">int</SPAN> g <SPAN class="op">=</SPAN> p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                        <SPAN class="kw1">int</SPAN> b <SPAN class="op">=</SPAN> p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>colors<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>r <SPAN class="op">-</SPAN> r<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> alpha<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>r <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>colors<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>g <SPAN class="op">-</SPAN> g<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> alpha<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>g <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>colors<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>b <SPAN class="op">-</SPAN> b<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> alpha<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>b <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    <SPAN class="op">}</SPAN>
+                <SPAN class="op">}</SPAN>
+                p <SPAN class="op">+=</SPAN> <SPAN class="num">3</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="op">++</SPAN>colors<SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN><SPAN class="op">--</SPAN>len<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">void</SPAN> blend_color_vspan<SPAN class="op">(</SPAN><SPAN class="kw1">int</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">int</SPAN> y<SPAN class="op">,</SPAN>
+                               <SPAN class="kw1">unsigned</SPAN> len<SPAN class="op">,</SPAN> 
+                               <SPAN class="kw1">const</SPAN> color_type<SPAN class="op">*</SPAN> colors<SPAN class="op">,</SPAN>
+                               <SPAN class="kw1">const</SPAN> <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">*</SPAN> covers<SPAN class="op">,</SPAN>
+                               <SPAN class="kw1">const</SPAN> <A href="agg_basics.h.html#int8u">int8u</A> cover<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">*</SPAN> p <SPAN class="op">=</SPAN> m_rbuf<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>row<SPAN class="op">(</SPAN>y<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x <SPAN class="op">+</SPAN> x<SPAN class="op">;</SPAN>
+            <SPAN class="kw1">do</SPAN> 
+            <SPAN class="op">{</SPAN>
+                <SPAN class="kw1">int</SPAN> alpha <SPAN class="op">=</SPAN> colors<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>a <SPAN class="op">*</SPAN> <SPAN class="op">(</SPAN>covers ? <SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN><SPAN class="op">*</SPAN>covers<SPAN class="op">++</SPAN><SPAN class="op">)</SPAN> : <SPAN class="kw1">int</SPAN><SPAN class="op">(</SPAN>cover<SPAN class="op">)</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+
+                <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>alpha<SPAN class="op">)</SPAN>
+                <SPAN class="op">{</SPAN>
+                    <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>alpha <SPAN class="op">==</SPAN> <SPAN class="num">255</SPAN><SPAN class="op">*</SPAN><SPAN class="num">255</SPAN><SPAN class="op">)</SPAN>
+                    <SPAN class="op">{</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>colors<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>r<SPAN class="op">;</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>colors<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>g<SPAN class="op">;</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN>colors<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>b<SPAN class="op">;</SPAN>
+                    <SPAN class="op">}</SPAN>
+                    <SPAN class="kw1">else</SPAN>
+                    <SPAN class="op">{</SPAN>
+                        <SPAN class="kw1">int</SPAN> r <SPAN class="op">=</SPAN> p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                        <SPAN class="kw1">int</SPAN> g <SPAN class="op">=</SPAN> p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                        <SPAN class="kw1">int</SPAN> b <SPAN class="op">=</SPAN> p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN><SPAN class="op">;</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::R<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>colors<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>r <SPAN class="op">-</SPAN> r<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> alpha<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>r <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::G<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>colors<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>g <SPAN class="op">-</SPAN> g<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> alpha<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>g <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                        p<SPAN class="op">[</SPAN>Order::B<SPAN class="op">]</SPAN> <SPAN class="op">=</SPAN> <SPAN class="op">(</SPAN><A href="agg_basics.h.html#int8u">int8u</A><SPAN class="op">)</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN><SPAN class="op">(</SPAN>colors<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>b <SPAN class="op">-</SPAN> b<SPAN class="op">)</SPAN> <SPAN class="op">*</SPAN> alpha<SPAN class="op">)</SPAN> <SPAN class="op">+</SPAN> <SPAN class="op">(</SPAN>b <SPAN class="op">&lt;&lt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">&gt;&gt;</SPAN> <SPAN class="num">16</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                    <SPAN class="op">}</SPAN>
+                <SPAN class="op">}</SPAN>
+                p <SPAN class="op">+=</SPAN> m_rbuf<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>stride<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+                <SPAN class="op">++</SPAN>colors<SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <SPAN class="kw1">while</SPAN><SPAN class="op">(</SPAN><SPAN class="op">--</SPAN>len<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+    <SPAN class="kw1">private</SPAN>:
+        <A href="../../doc/basic_renderers/basic_renderers.agdoc.html#rendering_buffer">rendering_buffer</A><SPAN class="op">*</SPAN> m_rbuf<SPAN class="op">;</SPAN>
+
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+
+    <SPAN class="kw1">typedef</SPAN> <A href="agg_pixfmt_rgb24.h.html#pixel_formats_rgb24">pixel_formats_rgb24</A><SPAN class="op">&lt;</SPAN><A href="agg_color_rgba8.h.html#order_rgb24">order_rgb24</A><SPAN class="op">&gt;</SPAN> <A href="agg_pixfmt_rgb24.h.html#pixfmt_rgb24">pixfmt_rgb24</A><SPAN class="op">;</SPAN>    <SPAN class="rem">//----<A name="pixfmt_rgb24"><B></B></A><A href="agg_pixfmt_rgb24.h.html#pixfmt_rgb24">pixfmt_rgb24</A></SPAN>
+    <SPAN class="kw1">typedef</SPAN> <A href="agg_pixfmt_rgb24.h.html#pixel_formats_rgb24">pixel_formats_rgb24</A><SPAN class="op">&lt;</SPAN><A href="agg_color_rgba8.h.html#order_bgr24">order_bgr24</A><SPAN class="op">&gt;</SPAN> <A href="agg_pixfmt_rgb24.h.html#pixfmt_bgr24">pixfmt_bgr24</A><SPAN class="op">;</SPAN>    <SPAN class="rem">//----<A name="pixfmt_bgr24"><B></B></A><A href="agg_pixfmt_rgb24.h.html#pixfmt_bgr24">pixfmt_bgr24</A></SPAN>
+
+<SPAN class="op">}</SPAN>
+
+<SPAN class="kw2">#endif</SPAN>
+
+</PRE></TD></TR></TABLE><FONT style="margin-left:1em"><I></I></FONT><TABLE width="640px" bgcolor="#583927" height="1px" border="0" cellspacing="0" cellpadding="0" style="margin:0px;"><TR><TD></TD></TR></TABLE>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0">
+<TR><TD><CENTER><SPAN class="authors">
+Copyright <SPAN class="larger">&#169;</SPAN> 2002-2004
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+<TR><TD><CENTER><SPAN class="authors">
+Web Design and Programming
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+</TABLE>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+</HTML>

@@ -1,0 +1,70 @@
+<HTML><HEAD><TITLE>Anti-Grain Geometry - </TITLE>
+<META http-equiv="Content-Type" content="text/html"/>
+<LINK rel="stylesheet" type="text/css" href="../../agg.styles.css"/>
+</HEAD>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0"><TR><TD><PRE><SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Anti-Grain Geometry - Version 2.3</SPAN>
+<SPAN class="rem">// Copyright (C) 2002-2005 Maxim Shemanarev (http://www.antigrain.com)</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// Permission to copy, use, modify, sell and distribute this software </SPAN>
+<SPAN class="rem">// is granted provided this copyright notice appears in all copies. </SPAN>
+<SPAN class="rem">// This software is provided &quot;as is&quot; without express or implied</SPAN>
+<SPAN class="rem">// warranty, and with no claim as to its suitability for any purpose.</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Contact: mcseem@antigrain.com</SPAN>
+<SPAN class="rem">//          mcseemagg@yahoo.com</SPAN>
+<SPAN class="rem">//          http://www.antigrain.com</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+
+<SPAN class="kw2">#ifndef</SPAN> AGG_SPAN_GENERATOR_INCLUDED
+<SPAN class="kw2">#define</SPAN> AGG_SPAN_GENERATOR_INCLUDED
+
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="agg_basics.h.html">agg_basics.h</A>&quot;</SPAN>
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="agg_span_allocator.h.html">agg_span_allocator.h</A>&quot;</SPAN>
+
+<SPAN class="kw1">namespace</SPAN> agg
+<SPAN class="op">{</SPAN>
+
+    <SPAN class="rem">//==========================================================<A name="span_generator"><B></B></A><A href="agg_span_generator.h.html#span_generator">span_generator</A></SPAN>
+    <SPAN class="kw1">template</SPAN><SPAN class="op">&lt;</SPAN><SPAN class="kw1">class</SPAN> ColorT<SPAN class="op">,</SPAN> <SPAN class="kw1">class</SPAN> Allocator<SPAN class="op">&gt;</SPAN> <SPAN class="kw1">class</SPAN> <A href="agg_span_generator.h.html#span_generator">span_generator</A>
+    <SPAN class="op">{</SPAN>
+    <SPAN class="kw1">public</SPAN>:
+        <SPAN class="kw1">typedef</SPAN> ColorT color_type<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typedef</SPAN> Allocator alloc_type<SPAN class="op">;</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <A href="agg_span_generator.h.html#span_generator">span_generator</A><SPAN class="op">(</SPAN>alloc_type<SPAN class="op">&amp;</SPAN> alloc<SPAN class="op">)</SPAN> : m_alloc<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>alloc<SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">void</SPAN> allocator<SPAN class="op">(</SPAN>alloc_type<SPAN class="op">&amp;</SPAN> alloc<SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN> m_alloc <SPAN class="op">=</SPAN> <SPAN class="op">&amp;</SPAN>alloc<SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+        alloc_type<SPAN class="op">&amp;</SPAN> allocator<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN> <SPAN class="kw1">return</SPAN> <SPAN class="op">*</SPAN>m_alloc<SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+
+        <SPAN class="rem">//--------------------------------------------------------------------</SPAN>
+        <SPAN class="kw1">void</SPAN> prepare<SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> max_span_len<SPAN class="op">)</SPAN> 
+        <SPAN class="op">{</SPAN>
+            m_alloc<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN><SPAN class="kw1">allocate</SPAN><SPAN class="op">(</SPAN>max_span_len<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+    <SPAN class="kw1">private</SPAN>:
+        alloc_type<SPAN class="op">*</SPAN> m_alloc<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+<SPAN class="op">}</SPAN>
+
+<SPAN class="kw2">#endif</SPAN>
+</PRE></TD></TR></TABLE><FONT style="margin-left:1em"><I></I></FONT><TABLE width="640px" bgcolor="#583927" height="1px" border="0" cellspacing="0" cellpadding="0" style="margin:0px;"><TR><TD></TD></TR></TABLE>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0">
+<TR><TD><CENTER><SPAN class="authors">
+Copyright <SPAN class="larger">&#169;</SPAN> 2002-2004
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+<TR><TD><CENTER><SPAN class="authors">
+Web Design and Programming
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+</TABLE>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+</HTML>

@@ -1,0 +1,193 @@
+<HTML>
+ <HEAD>
+  <TITLE>Anti-Grain Geometry</TITLE>
+  <LINK href="../agg_styles.css" type="text/css" rel="stylesheet">
+ </HEAD>
+
+ <BODY bgColor="#ffffff">
+
+
+<table align="center" width="640px" border="0" cellpadding="0" cellspacing="0">
+ <tr>
+  <td align="left"><img src="../img/agg_logo.gif" alt="The Anti-Grain Geometry Project"></td>
+ </tr>
+</table>
+
+<table align="center" width="640px" border="0" cellpadding="0" cellspacing="0">
+ <tr>
+  <td bgcolor="#3399ff">
+   <table width="640px" height="20px" border="0" cellspacing="0" cellpadding="0">
+    <tr align="left">
+     <td width="20px"><img src="../img/agg_icon.gif" border="0" align="left"></td>
+     <td align="left"> <font color="#ffffff">
+       <a href="../">  <font color="#ffffff"> Home</font></a>
+     | <a href="../agg_comparison">  <font color="#ffffff"> Comparison </font></a>
+     </font></td>
+    </tr>
+   </table>
+  </tr>
+ </td>
+</table>
+
+
+<!-- SUBTITLE -->
+<table align="center" width="640px" border="0" cellpadding="0" cellspacing="0" bgcolor="#ffffff">
+ <tr>
+  <td width="2px"   height="40px" bgcolor="#3399ff"></td>
+  <td width="636px" height="40px" align="center"><font class="st"> Comparison AGG and Windows GDI+ </font></td>
+  <td width="2px"   height="40px" bgcolor="#3399ff"></td>
+ </tr>
+</table>
+
+
+
+<!-- =================== -->
+<table align="center" width="640px" height="2px" border="0" cellspacing="0" cellpadding="0">
+ <tr>
+  <td bgcolor="#3399ff"></td>
+ </tr>
+</table>
+<!-- =================== -->
+
+
+<!-- ************************ -->
+<table align="center" width="640px" height="10px" border="0" cellspacing="0" cellpadding="0">
+ <tr>
+  <td width="2px" bgcolor="#3399ff"></td><td width="10px"></td>
+  <td>
+
+   <br>
+   <p align="justify">
+To compare the rendering capabilities and quality I installed 
+<a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/gdicpp/cpp_gdi+start_26ic.asp?frame=true">GDI+</a>
+and created a simple application. The application draws narrow ellipses of different 
+thickness, which is a good test for the quality of Anti-Aliasing. I suspected that the quality of
+MS GDI+ is not the best, but I hoped they did something better than MS DirectAnimation,
+whose quality is very questionable. But things did not change and actually, the quality 
+of the GDI+ renderer is as lousy as earlier Microsoft's attempts. It uses only 4 levels
+of Anti-Aliasing and calculates the values pretty bad. But the worst thing is that GDI+ cannot 
+correctly render lines whose thickness is less than one pixel. It means that actually there's 
+no subpixel accuracy as they claim. Of cource, it's phisically impossible to draw a line of, say,
+0.5 pixel width, but a proper renderer will simulate it with decreasing the brightness of the 
+line. Look.
+</p>
+<p align="center">
+<a href="../img/quality_gdip_ellipses1e.gif">
+<img src="../img/quality_gdip_ellipses1.gif" border="0"></a>&nbsp;&nbsp&nbsp&nbsp
+<a href="../img/quality_agg_ellipses1e.gif">
+<img src="../img/quality_agg_ellipses1.gif" border="0"></a><br>
+</p>
+<p align="justify">
+Here the left screenshot is rendered with GDI+, the right one - with AGG. 
+Click on the images to see the larger ones. Below the images there're 
+zommed in parts that show the quality in detalis. The ellipses have thickness 
+increasing by 0.3 of a pixel from top to bottom. As you can see, the visual 
+thickness of the first 5 ellipses rendered with GDI+ is the same, and only 
+after achieving the threshold of 1.8 pixels it sharply increases. In AGG the thickness
+of the ellipses increases quite gradually.
+Below is the code used to render the ellipses with GDI+ and AGG.
+</p>
+<hr color="#3399ff"><pre> 
+//Rendering with GDI+
+//----------------------------
+Matrix matrix;
+matrix.Translate(-REAL(width/2), -REAL(height/2), MatrixOrderAppend); 
+matrix.Rotate(REAL(g_angle), MatrixOrderAppend);
+matrix.Scale(REAL(g_scale), REAL(g_scale), MatrixOrderAppend);
+matrix.Translate(REAL(width/2), REAL(height/2), MatrixOrderAppend);
+graphics.SetTransform(&matrix);
+
+int i;
+float y = 10.0f;
+float thickness = 0.3f;
+SolidBrush sBrush(Color(255, 0, 0, 0));
+for(i = 0; i < 15; i++)
+{
+    Pen black(&sBrush, thickness);
+    graphics.DrawEllipse(&black, 20.0f, y, 560.0f, 25.0f);
+    thickness += 0.3f;
+    y += 35.0f;
+}
+
+
+//Rendering with AGG
+//----------------------------
+affine_matrix mtx;
+mtx *= translation_matrix(-width/2, -height/2);
+mtx *= scaling_matrix(g_scale, g_scale);
+mtx *= rotation_matrix(-g_angle);
+mtx *= translation_matrix(width/2, height/2);
+
+ellipse ell;
+conv_polyline < ellipse > poly(&ell);
+conv_transform< conv_polyline< ellipse > > trans(&poly, &mtx);
+r.set_attribute(rgba8(0, 0, 0, 255));
+
+int i;
+double y = 10.0;
+double thickness = 0.3;
+for(i = 0; i < 15; i++)
+{
+    ellipse.init(580.0/2.0, y+12, 560.0/2.0, 12.5, 100);
+    poly.set_thickness(thickness);
+    make_polygon(&g_polyfill, &trans, 0);
+    render_polygon(&r, &g_polyfill);
+    thickness += 0.3f;
+    y += 35.0f;
+}
+</pre>
+<hr color="#3399ff">
+
+<p align="justify">
+The code of using AGG is a bit more complex than GDI+ one, but the beautiful idea of 
+creating custom conversion pipelines in AGG gives you unlimited possibilities.
+</p>
+<hr color="#3399ff">
+<p align="justify">
+Working applications for Windows are available for download: <br>
+<a href="../agg_downloads/qual_gdip.zip">GDI+ Rendering</a>, 
+<a href="../agg_downloads/qual_agg.zip">AGG Rendering</a><br>
+Both applications use affine transformations. Just click the left mouse button and 
+drag to rorate and scale the ellipses. Watch for changing of the line thickness.
+</p>
+<br>
+
+  </td>
+  <td width="10px"></td><td width="2px" bgcolor="#3399ff"></td>
+ </tr>
+</table>
+<!-- ************************ -->
+
+
+<!-- =================== -->
+<table align="center" width="640px" height="2px" border="0" cellspacing="0" cellpadding="0">
+ <tr>
+  <td bgcolor="#3399ff"></td>
+ </tr>
+</table>
+<!-- =================== -->
+
+
+
+
+<table align="center" width="640px" border="0" cellpadding="0" cellspacing="0" bgcolor="#ffffff">
+ <tr>
+  <td width="2px" bgcolor="#3399ff"></td>
+  <td width="636px" align="center">
+   <font class="cr">
+    Copyright &copy; 2002 <a href="mailto:mcseem@antigrain.com">Maxim Shemanarev</a> (McSeem)
+   </font>
+  </td>
+  <td width="2px" bgcolor="#3399ff"></td>
+ </tr>
+</table>
+
+<table align="center" width="640px" height="2px" border="0" cellspacing="0" cellpadding="0">
+ <tr>
+  <td bgcolor="#3399ff"></td>
+ </tr>
+</table>
+
+
+ </BODY>
+</HTML>

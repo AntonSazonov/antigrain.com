@@ -1,0 +1,153 @@
+<HTML><HEAD><TITLE>Anti-Grain Geometry - </TITLE>
+<META http-equiv="Content-Type" content="text/html"/>
+<LINK rel="stylesheet" type="text/css" href="../../agg.styles.css"/>
+</HEAD>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0"><TR><TD><PRE><SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Anti-Grain Geometry - Version 2.2</SPAN>
+<SPAN class="rem">// Copyright (C) 2002-2004 Maxim Shemanarev (http://www.antigrain.com)</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// Permission to copy, use, modify, sell and distribute this software </SPAN>
+<SPAN class="rem">// is granted provided this copyright notice appears in all copies. </SPAN>
+<SPAN class="rem">// This software is provided &quot;as is&quot; without express or implied</SPAN>
+<SPAN class="rem">// warranty, and with no claim as to its suitability for any purpose.</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">// Contact: mcseem@antigrain.com</SPAN>
+<SPAN class="rem">//          mcseemagg@yahoo.com</SPAN>
+<SPAN class="rem">//          http://www.antigrain.com</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">// classes: <A href="agg_vertex_iterator.h.html#vertex_iterator">vertex_iterator</A> </SPAN>
+<SPAN class="rem">//          <A href="agg_vertex_iterator.h.html#vertex_source_adaptor">vertex_source_adaptor</A> </SPAN>
+<SPAN class="rem">//          <A href="agg_vertex_iterator.h.html#vertex_source_adaptor_with_id">vertex_source_adaptor_with_id</A></SPAN>
+<SPAN class="rem">//</SPAN>
+<SPAN class="rem">//----------------------------------------------------------------------------</SPAN>
+<SPAN class="kw2">#ifndef</SPAN> AGG_VERTEX_ITERATOR_INCLUDED
+<SPAN class="kw2">#define</SPAN> AGG_VERTEX_ITERATOR_INCLUDED
+
+<SPAN class="kw2">#include</SPAN> <SPAN class="str">&quot;<A href="agg_basics.h.html">agg_basics.h</A>&quot;</SPAN>
+
+
+<SPAN class="kw1">namespace</SPAN> agg
+<SPAN class="op">{</SPAN>
+
+    <SPAN class="rem">//---------------------------------------------------------<A name="vertex_iterator"><B></B></A><A href="agg_vertex_iterator.h.html#vertex_iterator">vertex_iterator</A></SPAN>
+    <SPAN class="kw1">template</SPAN><SPAN class="op">&lt;</SPAN><SPAN class="kw1">class</SPAN> VertexSource<SPAN class="op">&gt;</SPAN> <SPAN class="kw1">class</SPAN> <A href="agg_vertex_iterator.h.html#vertex_iterator">vertex_iterator</A>
+    <SPAN class="op">{</SPAN>
+    <SPAN class="kw1">public</SPAN>:
+        <A href="agg_vertex_iterator.h.html#vertex_iterator">vertex_iterator</A><SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+        <A href="agg_vertex_iterator.h.html#vertex_iterator">vertex_iterator</A><SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> cmd<SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN> m_vertex<SPAN class="op">.</SPAN>cmd <SPAN class="op">=</SPAN> cmd<SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+        <A href="agg_vertex_iterator.h.html#vertex_iterator">vertex_iterator</A><SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <A href="agg_vertex_iterator.h.html#vertex_iterator">vertex_iterator</A><SPAN class="op">&amp;</SPAN> i<SPAN class="op">)</SPAN> : m_vs<SPAN class="op">(</SPAN>i<SPAN class="op">.</SPAN>m_vs<SPAN class="op">)</SPAN><SPAN class="op">,</SPAN> m_vertex<SPAN class="op">(</SPAN>i<SPAN class="op">.</SPAN>m_vertex<SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+        <A href="agg_vertex_iterator.h.html#vertex_iterator">vertex_iterator</A><SPAN class="op">(</SPAN>VertexSource<SPAN class="op">&amp;</SPAN> vs<SPAN class="op">,</SPAN> <SPAN class="kw1">unsigned</SPAN> id<SPAN class="op">)</SPAN> : m_vs<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>vs<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            m_vs<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>rewind<SPAN class="op">(</SPAN>id<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            m_vertex<SPAN class="op">.</SPAN>cmd <SPAN class="op">=</SPAN> m_vs<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>vertex<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>m_vertex<SPAN class="op">.</SPAN>x<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>m_vertex<SPAN class="op">.</SPAN>y<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+        <A href="agg_vertex_iterator.h.html#vertex_iterator">vertex_iterator</A><SPAN class="op">&amp;</SPAN> <SPAN class="kw1">operator</SPAN><SPAN class="op">++</SPAN><SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> 
+        <SPAN class="op">{</SPAN>
+            m_vertex<SPAN class="op">.</SPAN>cmd <SPAN class="op">=</SPAN> m_vs<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>vertex<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>m_vertex<SPAN class="op">.</SPAN>x<SPAN class="op">,</SPAN> <SPAN class="op">&amp;</SPAN>m_vertex<SPAN class="op">.</SPAN>y<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">return</SPAN> <SPAN class="op">*</SPAN><SPAN class="kw1">this</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="kw1">const</SPAN> <A href="agg_basics.h.html#vertex_type">vertex_type</A><SPAN class="op">&amp;</SPAN> <SPAN class="kw1">operator</SPAN><SPAN class="op">*</SPAN><SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="op">{</SPAN> <SPAN class="kw1">return</SPAN> m_vertex<SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+        <SPAN class="kw1">const</SPAN> <A href="agg_basics.h.html#vertex_type">vertex_type</A><SPAN class="op">*</SPAN> <SPAN class="kw1">operator</SPAN><SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN><SPAN class="op">(</SPAN><SPAN class="op">)</SPAN> <SPAN class="kw1">const</SPAN> <SPAN class="op">{</SPAN> <SPAN class="kw1">return</SPAN> <SPAN class="op">&amp;</SPAN>m_vertex<SPAN class="op">;</SPAN> <SPAN class="op">}</SPAN>
+
+        <SPAN class="kw1">bool</SPAN> <SPAN class="kw1">operator</SPAN> <SPAN class="op">!=</SPAN> <SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> <A href="agg_vertex_iterator.h.html#vertex_iterator">vertex_iterator</A><SPAN class="op">&amp;</SPAN> i<SPAN class="op">)</SPAN> 
+        <SPAN class="op">{</SPAN> 
+            <SPAN class="kw1">return</SPAN> m_vertex<SPAN class="op">.</SPAN>cmd <SPAN class="op">!=</SPAN> i<SPAN class="op">.</SPAN>m_vertex<SPAN class="op">.</SPAN>cmd<SPAN class="op">;</SPAN> 
+        <SPAN class="op">}</SPAN>
+
+    <SPAN class="kw1">private</SPAN>:
+        VertexSource<SPAN class="op">*</SPAN> m_vs<SPAN class="op">;</SPAN>
+        <A href="agg_basics.h.html#vertex_type">vertex_type</A>   m_vertex<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+
+    <SPAN class="rem">//---------------------------------------------------<A name="vertex_source_adaptor"><B></B></A><A href="agg_vertex_iterator.h.html#vertex_source_adaptor">vertex_source_adaptor</A></SPAN>
+    <SPAN class="kw1">template</SPAN><SPAN class="op">&lt;</SPAN><SPAN class="kw1">class</SPAN> VertexContainer<SPAN class="op">&gt;</SPAN> <SPAN class="kw1">class</SPAN> <A href="agg_vertex_iterator.h.html#vertex_source_adaptor">vertex_source_adaptor</A>
+    <SPAN class="op">{</SPAN>
+    <SPAN class="kw1">public</SPAN>:
+        <A href="agg_vertex_iterator.h.html#vertex_source_adaptor">vertex_source_adaptor</A><SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> VertexContainer<SPAN class="op">&amp;</SPAN> container<SPAN class="op">)</SPAN> :
+            m_container<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>container<SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+        
+        <SPAN class="kw1">void</SPAN> rewind<SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN><SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            m_iterator <SPAN class="op">=</SPAN> m_container<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>begin<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            m_end <SPAN class="op">=</SPAN> m_container<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>end<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="kw1">unsigned</SPAN> vertex<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN><SPAN class="op">*</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN><SPAN class="op">*</SPAN> y<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">unsigned</SPAN> cmd <SPAN class="op">=</SPAN> <A href="agg_basics.h.html#path_cmd_stop">path_cmd_stop</A><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>m_iterator <SPAN class="op">!=</SPAN> m_end<SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                <SPAN class="op">*</SPAN>x  <SPAN class="op">=</SPAN> m_iterator<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>x<SPAN class="op">;</SPAN>
+                <SPAN class="op">*</SPAN>y  <SPAN class="op">=</SPAN> m_iterator<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>y<SPAN class="op">;</SPAN>
+                cmd <SPAN class="op">=</SPAN> m_iterator<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>cmd<SPAN class="op">;</SPAN>
+                <SPAN class="op">++</SPAN>m_iterator<SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <SPAN class="kw1">return</SPAN> cmd<SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+    <SPAN class="kw1">private</SPAN>:
+        <SPAN class="kw1">const</SPAN> VertexContainer<SPAN class="op">*</SPAN> m_container<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typename</SPAN> VertexContainer::const_iterator m_iterator<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typename</SPAN> VertexContainer::const_iterator m_end<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+
+
+    <SPAN class="rem">//-------------------------------------------<A name="vertex_source_adaptor_with_id"><B></B></A><A href="agg_vertex_iterator.h.html#vertex_source_adaptor_with_id">vertex_source_adaptor_with_id</A></SPAN>
+    <SPAN class="kw1">template</SPAN><SPAN class="op">&lt;</SPAN><SPAN class="kw1">class</SPAN> VertexContainer<SPAN class="op">&gt;</SPAN> <SPAN class="kw1">class</SPAN> <A href="agg_vertex_iterator.h.html#vertex_source_adaptor_with_id">vertex_source_adaptor_with_id</A>
+    <SPAN class="op">{</SPAN>
+    <SPAN class="kw1">public</SPAN>:
+        <A href="agg_vertex_iterator.h.html#vertex_source_adaptor_with_id">vertex_source_adaptor_with_id</A><SPAN class="op">(</SPAN><SPAN class="kw1">const</SPAN> VertexContainer<SPAN class="op">&amp;</SPAN> container<SPAN class="op">)</SPAN> :
+            m_container<SPAN class="op">(</SPAN><SPAN class="op">&amp;</SPAN>container<SPAN class="op">)</SPAN> <SPAN class="op">{</SPAN><SPAN class="op">}</SPAN>
+        
+        <SPAN class="kw1">void</SPAN> rewind<SPAN class="op">(</SPAN><SPAN class="kw1">unsigned</SPAN> id<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            m_iterator <SPAN class="op">=</SPAN> m_container<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>begin<SPAN class="op">(</SPAN>id<SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+            m_end <SPAN class="op">=</SPAN> m_container<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>end<SPAN class="op">(</SPAN><SPAN class="op">)</SPAN><SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+        <SPAN class="kw1">unsigned</SPAN> vertex<SPAN class="op">(</SPAN><SPAN class="kw1">double</SPAN><SPAN class="op">*</SPAN> x<SPAN class="op">,</SPAN> <SPAN class="kw1">double</SPAN><SPAN class="op">*</SPAN> y<SPAN class="op">)</SPAN>
+        <SPAN class="op">{</SPAN>
+            <SPAN class="kw1">unsigned</SPAN> cmd <SPAN class="op">=</SPAN> <A href="agg_basics.h.html#path_cmd_stop">path_cmd_stop</A><SPAN class="op">;</SPAN>
+            <SPAN class="kw1">if</SPAN><SPAN class="op">(</SPAN>m_iterator <SPAN class="op">!=</SPAN> m_end<SPAN class="op">)</SPAN>
+            <SPAN class="op">{</SPAN>
+                <SPAN class="op">*</SPAN>x  <SPAN class="op">=</SPAN> m_iterator<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>x<SPAN class="op">;</SPAN>
+                <SPAN class="op">*</SPAN>y  <SPAN class="op">=</SPAN> m_iterator<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>y<SPAN class="op">;</SPAN>
+                cmd <SPAN class="op">=</SPAN> m_iterator<SPAN class="op">-</SPAN><SPAN class="op">&gt;</SPAN>cmd<SPAN class="op">;</SPAN>
+                <SPAN class="op">++</SPAN>m_iterator<SPAN class="op">;</SPAN>
+            <SPAN class="op">}</SPAN>
+            <SPAN class="kw1">return</SPAN> cmd<SPAN class="op">;</SPAN>
+        <SPAN class="op">}</SPAN>
+
+    <SPAN class="kw1">private</SPAN>:
+        <SPAN class="kw1">const</SPAN> VertexContainer<SPAN class="op">*</SPAN> m_container<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typename</SPAN> VertexContainer::const_iterator m_iterator<SPAN class="op">;</SPAN>
+        <SPAN class="kw1">typename</SPAN> VertexContainer::const_iterator m_end<SPAN class="op">;</SPAN>
+    <SPAN class="op">}</SPAN><SPAN class="op">;</SPAN>
+
+
+
+<SPAN class="op">}</SPAN>
+
+
+<SPAN class="kw2">#endif</SPAN>
+</PRE></TD></TR></TABLE><FONT style="margin-left:1em"><I></I></FONT><TABLE width="640px" bgcolor="#583927" height="1px" border="0" cellspacing="0" cellpadding="0" style="margin:0px;"><TR><TD></TD></TR></TABLE>
+<TABLE width="640px" border="0" cellspacing="0" cellpadding="0">
+<TR><TD><CENTER><SPAN class="authors">
+Copyright <SPAN class="larger">&#169;</SPAN> 2002-2004
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+<TR><TD><CENTER><SPAN class="authors">
+Web Design and Programming
+<A href="../../mcseem/index.html"><B>Maxim Shemanarev</B></A>
+</SPAN></CENTER></TD></TR>
+</TABLE>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+<BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/>
+</HTML>
